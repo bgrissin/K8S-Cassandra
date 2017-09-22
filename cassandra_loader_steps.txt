@@ -1,0 +1,30 @@
+wsid,               year,    month,   day,   hour, temperature, dewpoint, pressure, wind_direction, wind_speed, sky_condition, one_hour_precip, six_hour_precip
+725030:14732,2014,    6,      11,      22,   14.4,     0,        1017.6,     0,           0,              ,           18.9,          40,               5.7
+725030:14732,2014,6,11,21,14.4,0,1018.5,0,6,,18.9,40,6.7
+725030:14732,2014,6,11,20,13.9,0,1018.7,0,0,,18.9,40,6.2
+725030:14732,2014,6,11,19,13.9,0,1018.9,0,0,,20,50,5.7
+725030:14732,2014,6,11,18,13.3,0,1019.3,0,8,,18.9,40,4.6
+725030:14732,2014,6,11,17,12.8,0,1019.7,0,0,,17.8,40,4.1
+725030:14732,2014,6,11,16,12.8,0,1019.8,0,0,,17.8,50,5.1
+725030:14732,2014,6,11,15,12.8,0,1019.8,0,8,,16.7,50,5.7
+725030:14732,2014,6,11,14,13.3,0,1019.6,0,0,,16.7,50,4.6
+725030:14732,2014,6,11,13,13.3,0,1019.4,0,0,,16.7,60,6.2
+725030:14732,2014,6,11,12,13.3,-0.1,1019.1,0.1,8,,16.7,70,5.1
+725030:14732,2014,6,11,11,13.9,0.1,1018.3,0,0,,17.2,50,4.6
+725030:14732,2014,6,11,10,13.9,-0.1,1017.4,0,0,,17.2,80,5.1
+725030:14732,2014,6,11,9,14.4,0,1016.9,0,8,,17.8,80,5.1
+725030:14732,2014,6,11,8,15.6,0,1016.6,0,0,,18.3,70,6.2
+
+
+DROP KEYSPACE IF EXISTS isd_weather_data;
+
+
+CREATE KEYSPACE isd_weather_data WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy', 'DC1' : 2 };
+
+use isd_weather_data;
+
+
+CREATE TABLE raw_weather_data (wsid text, year int, month int, day int, hour int, temperature double,dewpoint double,pressure double,wind_direction double, wind_speed double, sky_condition text,sky_condition_text text,one_hour_precip double,six_hour_precip double,twenty_four_hour_precip double, PRIMARY KEY ((wsid), year, month, day, hour)) WITH CLUSTERING ORDER BY (year DESC, month DESC, day DESC, hour DESC);
+
+
+COPY raw_weather_data (wsid, year, month, day, hour, temperature, dewpoint, pressure, wind_direction, wind_speed, sky_condition, one_hour_precip, six_hour_precip,twenty_four_hour_precip) FROM 'raw_weather_data.csv';

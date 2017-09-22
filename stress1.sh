@@ -1,0 +1,1 @@
+docker exec -it cassandra-1 cassandra-stress write n=10000 cl=quorum -mode native cql3 -rate threads=4 -schema keyspace="TestKEYSPACE01" "replication(factor=2)" -pop seq=1..10000 -log file=~/Test_10Kwrite_001.log -node ${NODE_1_IP},${NODE_2_IP},${NODE_3_IP} 
