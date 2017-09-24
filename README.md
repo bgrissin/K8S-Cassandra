@@ -12,11 +12,12 @@ There will be two seperate tests within this demo and all hosts in both test env
 
 It is not recommended to use this demo confguration for production environments.  For example, its typical for most large clusters running in production, making use of PX dynamic provisioning storage volumes in order to reduce administration burdens and complexities while increasing continous delivery speeds by incorporating automation.  
 
-# Test 1
+# Cassandra using local volumes 
+For this test we use existing volumes (/var/lib/cassandra/data) on each host and they are attached to cassandra PODs deployed from a K8S replication controller.  Each Cassandra POD is also configured using 2 replicas 
 
 
 
-# Test 2
+# Cassandra using Portworx PX volumes
 
 
 
