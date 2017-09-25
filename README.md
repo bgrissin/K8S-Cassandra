@@ -13,11 +13,13 @@ There will be two seperate tests within this demo and all hosts in both test env
 It is not recommended to use this demo confguration for production environments.  
 
 # Setting up the environment
-First, log into Packet.net and create three type0 instances, and name them cassandra1, cassandra2 and cassandra3.   Also create 6 volumes and attach a pair of volumes to each host instance.   You can also name the volume pairs individually if you want.  one of the volumes will be a local monted volume and the other will be a PX managed volume.
+First, log into Packet.net and create three type0 instances, and name them cassandra1, cassandra2 and cassandra3.   Also create 6 volumes and attach a pair of volumes to each host instance.   You can also name the volume pairs individually if you want.  on each host instance, one of the volumes will be a local mounted and managed volume and the other will be a PX managed volume.
 
-Next SSH into the first cassandra instance (cassandra1) and clone this repo.  Also verify you can ssh to the other instances (cassandra2 and cassandra3 also)
+Next SSH into the first cassandra instance (cassandra1) and clone this repo.  Also verify you can ssh to the other instances (cassandra2 and cassandra3)
 
-# Create your K8S cluster
+# Create your K8S cluster 
+follow these steps to create your K8S cluster <-   ->
+
 
 
 # Cassandra using local volumes lab
