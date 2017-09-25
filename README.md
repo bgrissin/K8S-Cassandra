@@ -15,8 +15,7 @@ It is not recommended to use this demo confguration for production environments.
 # [Setting up the environment](packet-info/README.md)
 
 
-#[Create your K8S cluster](K8S_create/K8S_setup.md)
-
+# [Create your K8S cluster](K8S_create/K8S_setup.md)
 
 
 # [Cassandra using local volumes lab](cassandra-local/README.md)
