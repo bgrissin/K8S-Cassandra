@@ -18,7 +18,7 @@ First, log into Packet.net and create three type0 instances, and name them cassa
 Next SSH into the first cassandra instance (cassandra1) and clone this repo.  Also verify you can ssh to the other instances (cassandra2 and cassandra3)
 
 # Create your K8S cluster 
-follow these steps to create your K8S cluster <-   ->
+follow these steps to create your K8S cluster
 
 
 
