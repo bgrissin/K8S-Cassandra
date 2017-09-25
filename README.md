@@ -22,13 +22,13 @@ Next SSH into the first cassandra instance (cassandra1) and clone this repo.  Al
 
 
 
-# [Cassandra using local volumes lab](K8S-Cassandra/cassandra-local/readme.md)
+# [Cassandra using local volumes lab](K8S-Cassandra/cassandra-local/README.md)
 
 For this test we use existing volumes (/var/lib/cassandra/data) on each host and they are attached to cassandra PODs deployed from a K8S statefulset service.  Each Cassandra POD is also configured using 2 ring replicas.
 
 
 
-# [Cassandra using Portworx PX volumes](K8S-Cassandra/cassandra-px/readme.md)
+# [Cassandra using Portworx PX volumes](K8S-Cassandra/cassandra-px/README.md)
 
 
 
