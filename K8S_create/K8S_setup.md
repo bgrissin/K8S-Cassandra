@@ -152,6 +152,42 @@ Also the default K8S config is to not allow you to deploy pods on your master, w
 	
 	 #  kubectl taint nodes --all node-role.kubernetes.io/master-
 	 
+The last step we need to do to complete our K8S cluster is to install PX.   To install PX we need to setup a keystore DB such as etcd or consul.  For this lab we use etcd running as a container on the master node and on specific ports that dont conflict with ports being used by the K8S KV.  Portworx does not recommend using the existing K8S Keystore for running PX.  There is an upcoming planned upcoming release of PX that will come with its own KV within, thus removing the need to install etcd or consul.
+
+
+
+First collect the private IP on the K8S master node bond0:0 interface and export the IP into a variable as follows:
+
+    #  ifconfig bond0:0
+          bond0:0   Link encap:Ethernet  HWaddr 0c:c4:7a:e5:45:ca
+          inet addr:10.100.1.3  Bcast:255.255.255.255  Mask:255.255.255.254
+          UP BROADCAST RUNNING MASTER MULTICAST  MTU:1500  Metric:1
+    
+    #  IPADDR=10.100.1.3
+    
+    # docker run -d -p 14001:14001 -p 12379:12379 -p 12380:12380 \
+     --restart=always \
+     --name etcd-px quay.io/coreos/etcd:v2.3.8 \                              
+     -name etcd0 \                                                            
+     -data-dir /var/lib/etcd/ \                                               
+     -advertise-client-urls http://${IPADDR}:12379,http://${IPADDR}:14001 \   
+     -listen-client-urls http://0.0.0.0:12379 \
+     -initial-advertise-peer-urls http://${IPADDR}:12380 \
+     -listen-peer-urls http://0.0.0.0:12380 \
+     -initial-cluster-token etcd-cluster \
+     -initial-cluster etcd0=http://${IPADDR}:12380 \
+     -initial-cluster-state new
+
+Next install dynamic provisioning PX on your master node.  Make certain your etcd IP address is correct in the curl syntax provided. Also you do not need to setup any PVCs or storageclasses as those are already provide in this repo. 
+
+	 #  curl -o px-spec.yaml "http://install.portworx.com?cluster=my-px-cluster&kvdb=etcd://10.100.1.3:12379&drives=/dev/dm-1&diface=bond0:0&miface=bond0&master=true"
+	 
+You should be able to run PXCTL on any node in your cluster at this point.
+     
+     # /opt/pwx/bin/pxctl status
+
+
+	 
 This concludes the steps for setting up your K8S cluster for use with this lab.  Please move forward to the next stage of the lab.
 
 
