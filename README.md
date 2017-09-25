@@ -12,6 +12,15 @@ There will be two seperate tests within this demo and all hosts in both test env
 
 It is not recommended to use this demo confguration for production environments.  For example, its typical for most large clusters running in production, making use of PX dynamic provisioning storage volumes in order to reduce administration burdens and complexities while increasing continous delivery speeds by incorporating automation.  
 
+# Setting up the environment
+First, log into Packet.net and create three type0 instances, and name them cassandra1, cassandra2 and cassandra3.   Also create 6 volumes and attach a pair of volumes to each host instance.   You can also name the volume pairs individually if you want.  one of the volumes will be a local monted volume and the other will be a PX managed volume.
+
+Next SSH into the first cassandra instance (cassandra1) and clone this repo.  Also verify you can ssh to the other instances (cassandra2 and cassandra3 also)
+
+# Create your K8S cluster
+
+
+
 # Cassandra using local volumes 
 For this test we use existing volumes (/var/lib/cassandra/data) on each host and they are attached to cassandra PODs deployed from a K8S replication controller.  Each Cassandra POD is also configured using 2 replicas 
 
