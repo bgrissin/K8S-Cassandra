@@ -178,15 +178,22 @@ First collect the private IP on the K8S master node bond0:0 interface and export
      -initial-cluster etcd0=http://${IPADDR}:12380 \
      -initial-cluster-state new
 
-Next install dynamic provisioning PX on your master node.  Make certain your etcd IP address is correct in the curl syntax provided. Also you do not need to setup any PVCs or storageclasses as those are already provide in this repo. 
+Next we are going to install dynamic provisioning PX from your master node.  You have two paths you can taketo prepare your PX service.  
+	
+	1) you can directly edit the provided px-spec.yaml in the cassandra-px/StorageClass directory of this repo, or
+	2) you can create your own px-spec.yaml using the curl syntax provided below.  
+	
+In both cases you should only have to change the etcd IP address to match what private IP you used for setting up your etcd.
+	
+     #curl -o px-spec.yaml "http://install.portworx.com?cluster=my-px-cluster&kvdb=etcd://10.100.1.3:12379&drives=/dev/dm-1&diface=bond0:0&miface=bond0&master=true"
+	
+Once you have your px-spec.yaml created, you then should be able to create the dynamic provisioning PX service using the following command from where you created the px-spec.yaml
 
-	 #  curl -o px-spec.yaml "http://install.portworx.com?cluster=my-px-cluster&kvdb=etcd://10.100.1.3:12379&drives=/dev/dm-1&diface=bond0:0&miface=bond0&master=true"
+     # kubectl apply -f px-spec.yaml
 	 
-You should be able to run PXCTL on any node in your cluster at this point.
+After a few minutes, you should be able to run PXCTL on any node in your cluster at this point.
      
      # /opt/pwx/bin/pxctl status
-
-
 	 
 This concludes the steps for setting up your K8S cluster for use with this lab.  Please move forward to the next stage of the lab.
 

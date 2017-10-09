@@ -1,6 +1,6 @@
 # K8S, Cassandra, and PX  
 
-   ![](images/PXK8S.tiff)       ![](images/Cassandra.tiff)
+![ ](images/PXK8S.tiff)       ![ ](images/Cassandra.tiff)
 
 ##BuR for modernized enterprise application stacks
 
