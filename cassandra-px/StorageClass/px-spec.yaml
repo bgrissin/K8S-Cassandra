@@ -67,7 +67,7 @@ spec:
                 operator: NotIn
                 values:
                 - "false"
-              
+
       hostNetwork: true
       hostPID: true
       containers:
@@ -77,10 +77,10 @@ spec:
           imagePullPolicy: Always
           args:
              ["-k etcd://10.100.26.1:2378,etcd://10.100.26.7:2378,etcd://10.100.26.3:2378",
-              "-c px-cluster1",
+              "-c px-cluster3",
               "-d bond0:0",
               "-m bond0",
-              " -s /dev/dm-0",
+              " -s /dev/dm-1",
               "",
               "",
               "",
@@ -88,7 +88,7 @@ spec:
               "",
               "",
               "-x", "kubernetes"]
-          
+
           livenessProbe:
             initialDelaySeconds: 840 # allow image pull in slow networks
             httpGet:
