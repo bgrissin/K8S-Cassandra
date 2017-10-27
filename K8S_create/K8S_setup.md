@@ -91,7 +91,8 @@ You should now be able to see proxy and flannel services are starting and you sh
 			po/kube-flannel-ds-nkb28                2/2       Running   1          
 			po/kube-proxy-ntqtl                     1/1       Running   1          
 			po/kube-proxy-tv1qs                     1/1       Running   1          
-			po/kube-proxy-wx9rk                     1/1       Running   1          			po/kube-scheduler-cassandra1            1/1       Running   1          
+			po/kube-proxy-wx9rk                     1/1       Running   1          			
+			po/kube-scheduler-cassandra1            1/1       Running   1          
 			
 			NAME                   CLUSTER-IP     EXTERNAL-IP   PORT(S)         
 			svc/kube-dns           10.96.0.10     <none>        53/UDP,53/TCP        
@@ -108,7 +109,7 @@ Also the default K8S config does not allow you to deploy pods on your master, fo
 	 
 ## Configuring local storage. 
 
-Packet hosts allow you to attach mulitple storage volumes to your each of your instances.  For this lab each node has 2 seperate volumes presented per node (one volume for use with PX and the other as a locally mounted volume as /var/lib/casssandra).  They should appear as dm-0 and dm-1 as in the output shown below (run these steps as root)
+Packet hosts allow you to attach mulitple storage volumes to your each of your instances.  For this lab each node has two seperate volumes presented per node (one volume for use with PX and the other as a locally mounted volume as /var/lib/cassandra).  They should appear as dm-0 and dm-1 as in the output shown below (run these steps as root)
 
     # packet-block-storage-attach -m queue
     
@@ -134,16 +135,16 @@ Use dm-0 on all 3 host instances as the locally mounted volume /var/lib/cassandr
       - select p for primary
       - Press enter to select default partition size and partition number.  
       - Enter a 'w' to write the partition information 
-      - Copy the volume name, it will be needed a few steps later 
+      - Copy the device volume name, it will be needed a few steps later 
              Device                            Boot Start       End   Sectors  				Size Id Type
-				/dev/mapper/volume-ab51ff46-part1       2048 209715199 209713152  100G 83 Linu
+	/dev/mapper/volume-ab51ff46-part1       2048 209715199 209713152  100G 83 Linu
       - Then press 'q' to quit fdisk.
 
 We then have to use kpartx to write the new device info into the kernel. We could also just reboot the host, but we are going to save the reboot and use the kpartx instead
     
     #  kpartx -u /dev/mapper/volume-ab51ff46-part1 
     
-Now lets put a File System on the new volume and then mount it for use in our first lab called cassandra-local
+Next place a File System on the new volume and then mount it for use in the first lab called cassandra-local
     
     #  mkfs.ext4 /dev/mapper/volume-ab51ff46-part1 
     
@@ -151,11 +152,9 @@ Now lets put a File System on the new volume and then mount it for use in our fi
     
     #  mount /dev/mapper/volume-ab51ff46-part1 /var/lib/cassandra/
     
-   
-    
 ## Configure PX Storage
 
-The last step we need to do to complete our K8S cluster is to install PX.   To install PX we need to setup a keystore DB such as etcd or consul.  For this lab we decided use an etcd cluster (multiple etcd containers) running as containers on each K8S node and on specific ports that dont conflict with ports being used by the K8S KV.  Portworx does not recommend using the existing K8S Keystore for running PX.  There is an upcoming planned upcoming release of PX that will come with its own KV within, thus removing the need to install etcd or consul.
+The last step we need to do to complete our K8S cluster is to install PX.   To install PX we need to setup a keystore DB such as etcd or consul.  For this lab we decided use an etcd cluster (multiple etcd containers) running as containers on each K8S node and on specific ports that dont conflict with ports being used by the K8S KV.  Portworx does not recommend using the existing K8S Keystore for running PX.  There is an upcoming release of PX that will come with its own KV within, thus removing the need to install etcd or consul.
 
 First collect the private IP on the K8S master node bond0:0 interface and export the IP into a variable as follows:
 
@@ -197,4 +196,3 @@ After a few minutes, you should be able to run PXCTL on any node in your cluster
      # /opt/pwx/bin/pxctl status
 	 
 This concludes the steps for setting up your K8S cluster for use with this lab.  Please move forward to the next stage of the lab.
-
