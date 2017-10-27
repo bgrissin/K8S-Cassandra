@@ -1,8 +1,8 @@
-# K8S, Cassandra, and PX  
+# Kubernetes, Cassandra, and PX  
 
-![ ](images/PXK8S.tiff)       ![ ](images/Cassandra.tiff)
+![](images/PXK8S.tiff)       ![](images/Cassandra.tiff)
 
-##BuR for modernized enterprise application stacks
+## BuR for modernized enterprise application stacks
 
 New application architectures and methodologies for building, saving, and running enterprise application stacks are having a profound impact on how we manage underlying storage and data.   With these changes arrives challenges as to how we continue to manage data and storage that meets or exceeds business regulatory requirements such as Backup and Disaster Recovery (BuR) plans.   
 
@@ -16,7 +16,7 @@ There will be two seperate tests within this demo and all hosts in both test env
 
 It is not recommended to use this demo confguration for production environments.  
 
-# Setting up the environment
+## Setting up the environment
 First, log into Packet.net and create three type0 instances, and name them cassandra1, cassandra2 and cassandra3.   Also create 6 volumes and attach a pair of volumes to each host instance.   You can also name the volume pairs individually if you want.  on each host instance, one of the volumes will be a local mounted and managed volume and the other will be a PX managed volume.
 
 Next SSH into the first cassandra instance (cassandra1) and clone this repo.  Also verify you can ssh to the other instances (cassandra2 and cassandra3)
