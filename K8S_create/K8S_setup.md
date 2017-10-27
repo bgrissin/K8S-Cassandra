@@ -32,11 +32,11 @@ Next, SSH to both nodes 2 and 3, execute the join statement captured from the pr
   
 These following steps should be performed on all 3 nodes.  
     
-    #  useradd bgrissin -G sudo -m -s /bin/bash 
-    #  passwd bgrissin
-    #  sudo usermod -aG docker bgrissin
-    #  su - bgrissin
-    #  docker ps  ----> make certain docker runs as user bgrissin
+    #  useradd joeuser -G sudo -m -s /bin/bash 
+    #  passwd joeuser
+    #  sudo usermod -aG docker joeuser
+    #  su - joeuser
+    #  docker ps  ----> make certain docker runs as user joeuser
     
 Configuring local storage. 
 
@@ -86,7 +86,7 @@ Now lets put a File System on the new volume and then mount it for use in our fi
     
 These steps are optional for nodes 2 and 3, but must be done on the master node (node 1).  In this case, bgrissin is my user.
      
-    #  su - bgrissin
+    #  su - joeuser
     #  sudo cp /etc/kubernetes/admin.conf $HOME/
     #  sudo chown $(id -u):$(id -g) $HOME/admin.conf
     #  export KUBECONFIG=$HOME/admin.conf
@@ -118,7 +118,7 @@ Once you have completed these steps successfully, you should be able to see your
 			NAME                     DESIRED   CURRENT   READY     AGE
 			rs/kube-dns-2425271678   1         1         0         1m
 			
-When I achieve a DNS pending state, lets apply the flannel networking services that will allow PODs to communicate to each other across the entire cluster.  
+When I receive a DNS pending state, apply the flannel networking services that will allow PODs to communicate to each other across the entire cluster.  
  
 	 #  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 	 #  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel-rbac.yml
@@ -148,7 +148,7 @@ You should now be able to see proxy and flannel services are starting and you sh
 			NAME                     DESIRED   CURRENT   READY    
 			rs/kube-dns-2425271678   1         1         1         
 			
-Also the default K8S config is to not allow you to deploy pods on your master, we can unset this restriction by running the following command.			
+Also the default K8S config does not allow you to deploy pods on your master, for this lab we want to unset this restriction by running the following command.			
 	
 	 #  kubectl taint nodes --all node-role.kubernetes.io/master-
 	 
@@ -178,7 +178,7 @@ First collect the private IP on the K8S master node bond0:0 interface and export
      -initial-cluster etcd0=http://${IPADDR}:12380 \
      -initial-cluster-state new
 
-Next we are going to install dynamic provisioning PX from your master node.  You have two paths you can taketo prepare your PX service.  
+Next we are going to install dynamic provisioning PX from your master node.  You have two paths you can take to prepare your PX service.  
 	
 	1) you can directly edit the provided px-spec.yaml in the cassandra-px/StorageClass directory of this repo, or
 	2) you can create your own px-spec.yaml using the curl syntax provided below.  
@@ -196,5 +196,4 @@ After a few minutes, you should be able to run PXCTL on any node in your cluster
      # /opt/pwx/bin/pxctl status
 	 
 This concludes the steps for setting up your K8S cluster for use with this lab.  Please move forward to the next stage of the lab.
-
 
