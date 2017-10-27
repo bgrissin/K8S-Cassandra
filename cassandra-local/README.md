@@ -1,4 +1,4 @@
-For this test we use existing volumes (/var/lib/cassandra/data) on each host that were created and formatted when we setup our K8S cluster nodes.
+For this test we use existing volumes (/var/lib/cassandra/data) on each host that are created and formatted when we setup our K8S cluster nodes.
 
 These local volumes are consumed by cassandra stateful PODs that are deployed via a K8S statefulset service using a headless service called cassandra.  Each Cassandra POD is also configured for Cassandra to use 2 replicas.  
 
