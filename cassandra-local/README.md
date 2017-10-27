@@ -1,4 +1,4 @@
-For this test we use existing volumes (/var/lib/cassandra/data) on each host that are created and formatted when we setup our K8S cluster nodes.
+For this lab we use local volumes (/var/lib/cassandra) on each host that were created and formatted when we setup our K8S cluster nodes.
 
 These local volumes are consumed by cassandra stateful PODs that are deployed via a K8S statefulset service using a headless service called cassandra.  Each Cassandra POD is also configured for Cassandra to use 2 replicas.  
 
@@ -10,7 +10,7 @@ To start stop or get the status ofthe PODs or the status of the cassandra cluste
 
 PX performance monitoring and failover
 
-On the master node,  from within the git repo you cloned earlier, cd into the cassandra-local directory. You should see several scripts and files similar to what is shown below.  
+On the master node, within the git repo you cloned earlier, cd into the cassandra-local directory. You should see several scripts and files similar to what is shown below.  
 
     joeuser@cassandra1:~/K8S-Cassandra/cassandra-local$ ls -l
     total 24
@@ -32,11 +32,11 @@ After a few minutes should have two pods running cassandra, one pod is named cas
     cassandra-0   1/1       Running   0          2h        10.244.1.55     cassandra3
     cassandra-1   1/1       Running   0          2h        10.244.2.131   cassandra2
 
-unlike when using the PX volumes, this statefulset does not make use of persistant claims and persistant volumes that PX dynamically creates upon request.  Instead this statefulset makes use of volumes that are preconfigured out of band to align to the statefulset parameters needed for any Cassandra POD that may be started on each host.
+This statefulset makes use of the local volumes that were created and preconfigured in the K8S create steps performed earlier.  The volumes created align to the statefulset volume parameters defined within the Cassandra statefulset defintion file called cassandra-statefulset.yaml.
 
-Choose from one of the 2 hosts running cassandra (NODE cassandra2 or 3) and lets download some test data that we can use to load into cassandra
+SSH to the cassandra2 host running cassandra (NODE cassandra2 or 3) and lets download some test data to our local volume /var/lib/cassandra that we can use to load directly into cassandra
 
-    root@cassandra2:~/$ curl -o raw_weather_data.csv https://raw.githubusercontent.com/killrweather/killrweather-data/master/data/raw_weather_data.csv
+    root@cassandra2:~/$ curl -o /var/lib/cassandra/raw_weather_data.csv https://raw.githubusercontent.com/killrweather/killrweather-data/master/data/raw_weather_data.csv
 
 Here is a snip of what the file looks like, and there is approx. 16M of data in the download.  I have added column headers as well 
 
@@ -49,32 +49,25 @@ Here is a snip of what the file looks like, and there is approx. 16M of data in 
     .
     .
 
-Now lets find the cassandra container ID for cassandra on the host your currently ssh'd into
 
-    root@cassandra2:~/$ docker ps | grep cass
-
-    9e43b4308340        gcr.io/google-samples/cassandra@sha256:7eed23532e59f9ea03260d161f7554df1f8cc2aae80bfe9e6e027aa1aeb264d0             "/sbin/dumb-init /bin"   2 hours ago         Up 2 hours                                                                                                            k8s_cassandra_cassandra-1_default_eef4e60f-a2a3-11e7-9e00-0cc47ae545ca_0
-
-The container ID is what we need so we can gain access into the container. In my example above my container ID is 9e43b4308340
-Lets get the sample data into the cassandra docker container that we curl'd earlier.
-
-    root@cassandra2:~/$  docker cp raw_weather_data.csv 9e43b4308340:/root/raw_weather_data.csv
-
-Next lets exec into that container, and make certain you see the data file
+Next lets exec into the cassandra container, and make certain you see the data file
 
     root@cassandra2:~/$ docker exec -it 9e43b4308340 bash
-    # ls -l
+    # ls -l /cassandra_data
     total 15644
     -rw-r--r-- 1 root root 16015396 Sep 26 12:49 raw_weather_data.csv
 
-Now lets run cqlsh and begin import data into cassandra from this host.  Also in a second SSH session for each host, lets begin an iostat that we capture what is going on during our data loading
+Now lets run cqlsh and begin import data into cassandra from this host.  
 
     $ cqlsh
+    
+Also in a second SSH session for each host, lets begin an iostat for /dev/dm-0 that we capture what is going on during our data loading
 
     $ iostat -mxdt /dev/dm-0 20 100 | sed -n -e '1d' -e '/^Device:/d' -e '/^$/d' -e 'p' |sed -e 'N;s/\n/ /' | awk '{ print $4" - "$1" "$2" "$7" "$8" "$12" "$13" "$16" "$17; }'
 
-(for testing px volumes this command would change to monitor the px dev i.e. /dev/dm-1)
+(for testing px volumes the command above would change to monitor the px manage device  /dev/dm-1)
 
+Now back to the CQLSH loader screen, execute the following commands to create the keyspaces and tables, and then load data into cassandra
 
     cqlsh> CREATE KEYSPACE isd_weather_data WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 2 };
 
