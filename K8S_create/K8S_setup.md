@@ -40,7 +40,7 @@ These following steps should be performed on all 3 nodes.
     
 Configuring local storage. 
 
-Packet hosts allow you to attach mulitple storage volumes to your each of your instances.  This lab requires each node to have 2 seperate volumes per node (one for each test).  They should appear as dm-0 and dm-1 (run these steps as root)
+Packet hosts allow you to attach mulitple storage volumes to your each of your instances.  For this lab each node has 2 seperate volumes per node (one for use with OX and the other as a locally mounted volume).  They should appear as dm-0 and dm-1 (run these steps as root)
 
     # packet-block-storage-attach -m queue
     
@@ -84,7 +84,7 @@ Now lets put a File System on the new volume and then mount it for use in our fi
     
     #  mount /dev/mapper/volume-ab51ff46-part1 /var/lib/cassandra/data/
     
-These steps are optional for nodes 2 and 3, but must be done on the master node (node 1).  In this case, bgrissin is my user.
+These steps are optional for nodes 2 and 3, but must be done on the master node (node 1).  In this case, joeuser is the user.
      
     #  su - joeuser
     #  sudo cp /etc/kubernetes/admin.conf $HOME/
