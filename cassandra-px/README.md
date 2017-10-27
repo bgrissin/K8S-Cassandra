@@ -12,7 +12,7 @@ PX performance monitoring and failover
 
 On the master node,  from within the git repo you cloned earlier, cd into the cassandra-px directory. You should see several scripts and files similar to what is shown below.  
 
-joeuser@cassandra1:~/K8S-Cassandra/cassandra-px$ ls -l
+'''joeuser@cassandra1:~/K8S-Cassandra/cassandra-px$ ls -l
 total 24
 -rw-rw-r-- 1   joeuser joeuser  165   Sep 11 20:20 cassandra-service.yaml
 -rw-rw-r-- 1   joeuser joeuser 2559  Sep 26 10:14 cassandra-statefulset.yaml
@@ -20,7 +20,7 @@ total 24
 -rwxrwxr-x 1 joeuser joeuser   99    Sep 22 10:45 start-cassandra.sh
 -rwxrwxr-x 1 joeuser joeuser  859   Sep 13 22:06 status-check.sh
 -rwxrwxr-x 1 joeuser joeuser  106   Sep 22 10:45 stop-cassandra.sh
-drwxrwxr-x 2 joeuser joeuser 4096  Sep 25 12:14 StorageClass
+drwxrwxr-x 2 joeuser joeuser 4096  Sep 25 12:14 StorageClass'''
 
 You should be able to start cassandra from here using the start-cassandra.sh script
 
