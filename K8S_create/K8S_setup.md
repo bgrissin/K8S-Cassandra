@@ -22,7 +22,7 @@ SSH to the first node (from here on out will be referred to as the master node) 
           inet addr:10.100.1.3  Bcast:255.255.255.255  Mask:255.255.255.254
           UP BROADCAST RUNNING MASTER MULTICAST  MTU:1500  Metric:1
                  
-Now lets init the K8S cluster on the master node. We are planning to use Flannel networking so add in the appropriate CIDR range for Flannel and specify the private IP address collected from the previous ifconfig step to instruct where to run the K8S API server.  You should capture the information at the end of the successful init output so that you can add additional nodes to the K8S cluster.
+Init the K8S cluster on the master node. We're use Flannel networking so add in the appropriate CIDR range for Flannel and specify the private IP address collected from the previous ifconfig step to instruct where to run the K8S API server.  You should capture the information at the end of the successful init output so that you can add additional nodes to the K8S cluster.
     
     #  kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=10.100.1.3 
     
@@ -37,53 +37,7 @@ These following steps should be performed on all 3 nodes.
     #  sudo usermod -aG docker joeuser
     #  su - joeuser
     #  docker ps  ----> make certain docker runs as user joeuser
-    
-Configuring local storage. 
-
-Packet hosts allow you to attach mulitple storage volumes to your each of your instances.  For this lab each node has 2 seperate volumes per node (one for use with OX and the other as a locally mounted volume).  They should appear as dm-0 and dm-1 (run these steps as root)
-
-    # packet-block-storage-attach -m queue
-    
-If successful, you should be able to see each of the new storage devices using the multipath tools on each packet host
-
-    #  root@cassandra1:~# multipath -ll
-     
-        volume-ab51ff46 (36001405bef83ee4e75b44a295d1f6398) dm-0 DATERA,IBLOCK
-        size=100G features='1 queue_if_no_path' hwhandler='1 alua' wp=rw
-        `-+- policy='round-robin 0' prio=1 status=active
-          |- 3:0:0:0 sde 8:64 active ready running
-          `- 2:0:0:0 sdb 8:16 active ready running
-        volume-d9bc26f9 (36001405b749edc435474992a28cd2563) dm-1 DATERA,IBLOCK
-        size=100G features='1 queue_if_no_path' hwhandler='1 alua' wp=rw
-        `-+- policy='round-robin 0' prio=1 status=active
-          |- 5:0:0:0 sdd 8:48 active ready running
-          `- 4:0:0:0 sdc 8:32 active ready running
- 
-Use dm-0 on all 3 host instances as the locally mounted volume on each host and dm-1 will later become the PX managed volume on each host.  Create a disk partition on each dm-0 device on each host.
-    
-    # fdisk /dev/dm-0
-      - press n to create a new partition
-      - select p for primary
-      - Press enter to select default partition size and partition number.  
-      - Enter a 'w' to write the partition information 
-      - Copy the volume name, it will be needed a few steps later 
-             Device                            Boot Start       End   Sectors  				Size Id Type
-				/dev/mapper/volume-ab51ff46-part1       2048 209715199 209713152  100G 83 Linu
-      - Then press 'q' to quit fdisk.
-
-We have to use kpartx to write the new device info into the kernel. We could just reboot the host, but we are going to save the reboot and use the kpartx instead
-    
-    #  kpartx -u /dev/mapper/volume-ab51ff46-part1 
-    
-Now lets put a File System on the new volume and then mount it for use in our first lab
-    
-    #  mkfs.ext4 /dev/mapper/volume-ab51ff46-part1 
-    
-    #  mkdir /var/lib/cassandra
-    #  mkdir /var/lib/cassandra/data
-    
-    #  mount /dev/mapper/volume-ab51ff46-part1 /var/lib/cassandra/data/
-    
+        
 These steps are optional for nodes 2 and 3, but must be done on the master node (node 1).  In this case, joeuser is the user.
      
     #  su - joeuser
@@ -152,9 +106,56 @@ Also the default K8S config does not allow you to deploy pods on your master, fo
 	
 	 #  kubectl taint nodes --all node-role.kubernetes.io/master-
 	 
-The last step we need to do to complete our K8S cluster is to install PX.   To install PX we need to setup a keystore DB such as etcd or consul.  For this lab we use etcd running as a container on the master node and on specific ports that dont conflict with ports being used by the K8S KV.  Portworx does not recommend using the existing K8S Keystore for running PX.  There is an upcoming planned upcoming release of PX that will come with its own KV within, thus removing the need to install etcd or consul.
+## Configuring local storage. 
 
+Packet hosts allow you to attach mulitple storage volumes to your each of your instances.  For this lab each node has 2 seperate volumes presented per node (one volume for use with PX and the other as a locally mounted volume as /var/lib/casssandra).  They should appear as dm-0 and dm-1 as in the output shown below (run these steps as root)
 
+    # packet-block-storage-attach -m queue
+    
+If successful, you should be able to see each of the new storage devices using the multipath tools on each packet host
+
+    #  root@cassandra1:~# multipath -ll
+     
+        volume-ab51ff46 (36001405bef83ee4e75b44a295d1f6398) dm-0 DATERA,IBLOCK
+        size=100G features='1 queue_if_no_path' hwhandler='1 alua' wp=rw
+        `-+- policy='round-robin 0' prio=1 status=active
+          |- 3:0:0:0 sde 8:64 active ready running
+          `- 2:0:0:0 sdb 8:16 active ready running
+        volume-d9bc26f9 (36001405b749edc435474992a28cd2563) dm-1 DATERA,IBLOCK
+        size=100G features='1 queue_if_no_path' hwhandler='1 alua' wp=rw
+        `-+- policy='round-robin 0' prio=1 status=active
+          |- 5:0:0:0 sdd 8:48 active ready running
+          `- 4:0:0:0 sdc 8:32 active ready running
+ 
+Use dm-0 on all 3 host instances as the locally mounted volume /var/lib/cassandra on each host and dm-1 will be used later as the PX managed volume on each host.  Create a disk partition on each dm-0 device on each host.
+    
+    # fdisk /dev/dm-0
+      - press n to create a new partition
+      - select p for primary
+      - Press enter to select default partition size and partition number.  
+      - Enter a 'w' to write the partition information 
+      - Copy the volume name, it will be needed a few steps later 
+             Device                            Boot Start       End   Sectors  				Size Id Type
+				/dev/mapper/volume-ab51ff46-part1       2048 209715199 209713152  100G 83 Linu
+      - Then press 'q' to quit fdisk.
+
+We then have to use kpartx to write the new device info into the kernel. We could also just reboot the host, but we are going to save the reboot and use the kpartx instead
+    
+    #  kpartx -u /dev/mapper/volume-ab51ff46-part1 
+    
+Now lets put a File System on the new volume and then mount it for use in our first lab called cassandra-local
+    
+    #  mkfs.ext4 /dev/mapper/volume-ab51ff46-part1 
+    
+    #  mkdir /var/lib/cassandra
+    
+    #  mount /dev/mapper/volume-ab51ff46-part1 /var/lib/cassandra/
+    
+   
+    
+## Configure PX Storage
+
+The last step we need to do to complete our K8S cluster is to install PX.   To install PX we need to setup a keystore DB such as etcd or consul.  For this lab we decided use an etcd cluster (multiple etcd containers) running as containers on each K8S node and on specific ports that dont conflict with ports being used by the K8S KV.  Portworx does not recommend using the existing K8S Keystore for running PX.  There is an upcoming planned upcoming release of PX that will come with its own KV within, thus removing the need to install etcd or consul.
 
 First collect the private IP on the K8S master node bond0:0 interface and export the IP into a variable as follows:
 
