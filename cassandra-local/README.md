@@ -81,16 +81,17 @@ Begin the data load process.  Depending on the size of your data file, this can 
         
 At this point you should be successfully loading data into cassandra and capturing some performance metrics while the data loader was taking place.   Rather than stop the iostat monitor and the loader, capture the current time and then continue on to the next steps below that monitors IOPS during a forced failover scenario. 
 
-SSH to you K8S master node, and su to the user that you created for running kubectl (in the examples provided earlier in these labs the user was 'joeuser').   Using the commands provided below, check for the status of your cassandra PODs and your K8S nodes.  Using these two commands will tell you what cassandra pods are running on which nodes.  Cassandra1 is the master node, and cassandra2 and 3 are the nodes that are workers are are running two replicas of Cassandra statefulsets. Also the cassandra service on node cassandra2 was used as the cqlsh client to load data into cassandra, and is still actively is running the loader, so keep this POD active and running.
+SSH to the K8S master node, and su to the user created for running kubectl. In the examples provided earlier the user was 'joeuser'.   Using the commands provided below, check for the status of your cassandra PODs and your K8S nodes.  Using these two commands will tell you what cassandra pods are running on which nodes.  Cassandra1 is the master node, and cassandra2 and 3 are the nodes that are workers are are running two replicas of Cassandra statefulsets. Also the cassandra service on node cassandra2 was used as the cqlsh client to load data into cassandra, and is still actively is running the loader, so keep this POD active and running.
 
-$ kubectl get pods -o wide
-$ kubectl get nodes
+    $ kubectl get pods -o wide
+    
+    $ kubectl get nodes
 
 We want a forced and controlled failure that reschedules the cassandra replica node that is not being used as a cassandra client for loading data, and in this case that node is cassandra3 and the POD name is cassandra-02.   To force this POD to another available node within the K8S cluster, first cordon off cassandra3 from receiving ant workloads.   Next delete POD cassandra-02, which in effect is the failure.   When setting up the K8S cluster earlier, we untainted our master node, cassandra1, thus allowing for the master to accept schedule requests to run workloads. What you should see is the casssandra POD eventually rescheduling the POD cassandra-02 to run on the node cassandra1.  Cassandra2 also has a statefulset cassandra POD named cassandra-01, but that is where I am loading data using the cqlsh client and I want to keep that running.  
 
-$ Kubectl cordon cassandra3
+    $ kubectl cordon cassandra3
 
-$ kubectl get pods -o wide
+    $ kubectl get pods -o wide
 
 
 
