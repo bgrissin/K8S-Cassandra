@@ -30,7 +30,9 @@ After a few minutes should have two pods running cassandra, one pod is named cas
     cassandra-0   1/1       Running   0          2h        10.244.1.55     cassandra3
     cassandra-1   1/1       Running   0          2h        10.244.2.131   cassandra2
 
-This statefulset makes use of the local volumes that were created during the K8S create steps performed earlier.  The volumes created align to the statefulset volume parameters and definitions that exist within the Cassandra statefulset defintion file called cassandra-statefulset.yaml.  
+This statefulset makes use of the local volumes that were created during the K8S create steps performed earlier.  The volumes align to the statefulset volume parameters and definitions that exist within the Cassandra statefulset defintion file called cassandra-statefulset.yaml.  
+
+One aspect to pay close attention to for these next steps are the volumes needed for this statefulset to work in this lab setting properly. The volumes must have already been created manually across all hosts when we created the K8S cluster.  Its important to note these local volumes must exist and be prepared for use with a proper partition and file systems, else any scale up or failover to a node that does not have the proper volume setups will create failures and issues.   These steps in this lab setting drastically differ from the other lab using PX created and managed.    devices.   
 
 Using one of the SSH sessions into cassandra2 host running cassandra,  download some test data to our local volume /var/lib/cassandra that we can use to load directly into cassandra
 
@@ -59,29 +61,39 @@ Run cqlsh from within the container.  You should also change your directory to /
 
     $ cqlsh
     
-Also in a second SSH session for each host, start an iostat for /dev/dm-0 so that we capture IOPS (below captures TPS) during our data loading
+Also in a second SSH session for each host, start an iostat for /dev/dm-0 so that we capture IOPS (below captures time interval and TPS evey 20 seconds and 100 times) during our data loading
 
-    $ iostat -mxdt /dev/dm-0 20 100 | sed -n -e '1d' -e '/^Device:/d' -e '/^$/d' -e 'p' |sed -e 'N;s/\n/ /' | awk '{ print $4" - "$1" "$2" "$7" "$8" "$12" "$13" "$16" "$17; }'
+    $ iostat -mdt /dev/dm-0 20 1000 | sed -n -e '1d' -e '/^Device:/d' -e '/^$/d' -e 'p' |sed -e 'N;s/\n/ /' | awk '{ print $2" "$4" - "$5" "$6" "$7; }'
 
-(when testing px volumes in the other lab, this command above changes to monitor the px managed device  /dev/dm-1)
+(when testing using px managed volumes in the other lab, this command above changes to monitor the px managed device  /dev/dm-1)
 
-Back to the CQLSH loader screen, execute the following commands to create the keyspaces and tables, and then load data into cassandra
+Back to the CQLSH loader screen, execute the following commands to create the keyspaces and tables.
 
     cqlsh> CREATE KEYSPACE isd_weather_data WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 2 };
 
     cqlsh> use isd_weather_data;
 
     cqlsh> CREATE TABLE raw_weather_data (wsid text, year int, month int, day int, hour int, temperature double,dewpoint double,pressure double,wind_direction double, wind_speed double, sky_condition text,sky_condition_text text,one_hour_precip double,six_hour_precip double,twenty_four_hour_precip double, PRIMARY KEY ((wsid), year, month, day, hour)) WITH CLUSTERING ORDER BY (year DESC, month DESC, day DESC, hour DESC);
+    
+Begin the data load process.  Depending on the size of your data file, this can be quite lengthy.   Once your loader completes you should receive some details about the load process and statistics.
 
     cqlsh> COPY raw_weather_data (wsid, year, month, day, hour, temperature, dewpoint, pressure, wind_direction, wind_speed, sky_condition, one_hour_precip, six_hour_precip,twenty_four_hour_precip) FROM 'raw_weather_data.csv' WITH MAXINSERTERRORS = -1;
+        
+At this point you should be successfully loading data into cassandra and capturing some performance metrics while the data loader was taking place.   Rather than stop the iostat monitor and the loader, capture the current time and then continue on to the next steps below that monitors IOPS during a forced failover scenario. 
 
-    cqlsh> quit
+SSH to you K8S master node, and su to the user that you created for running kubectl (in the examples provided earlier in these labs the user was 'joeuser').   Using the commands provided below, check for the status of your cassandra PODs and your K8S nodes.  Using these two commands will tell you what cassandra pods are running on which nodes.  Cassandra1 is the master node, and cassandra2 and 3 are the nodes that are workers are are running two replicas of Cassandra statefulsets. Also the cassandra service on node cassandra2 was used as the cqlsh client to load data into cassandra, and is still actively is running the loader, so keep this POD active and running.
 
-    root@cassandra2:~/$ nodetool getendpoints isd_weather_data raw_weather_data  725030
-    
-At this point you should be successfully loading data into cassandra and captured some performance metrics while the data loader was taking place.   Rather than stop the monitoring, I noted the current time before starting the next steps below started that creates a failover scenario in the next steps.  
+$ kubectl get pods -o wide
+$ kubectl get nodes
 
-The next steps create a failover scenario for our Cassandra service. The goal is to capture the amount of time it takes for a cassandra failure recovery to complete.
+We want a forced and controlled failure that reschedules the cassandra replica node that is not being used as a cassandra client for loading data, and in this case that node is cassandra3 and the POD name is cassandra-02.   To force this POD to another available node within the K8S cluster, first cordon off cassandra3 from receiving ant workloads.   Next delete POD cassandra-02, which in effect is the failure.   When setting up the K8S cluster earlier, we untainted our master node, cassandra1, thus allowing for the master to accept schedule requests to run workloads. What you should see is the casssandra POD eventually rescheduling the POD cassandra-02 to run on the node cassandra1.  Cassandra2 also has a statefulset cassandra POD named cassandra-01, but that is where I am loading data using the cqlsh client and I want to keep that running.  
+
+$ Kubectl cordon cassandra3
+
+$ kubectl get pods -o wide
+
+
+
 
 
 
