@@ -1,4 +1,4 @@
-For this lab, storage volumes are dynamically created and managed by PX.  The cassandra stateful PODs again in this lab are also represented via a K8S headless service called cassandra.  The major difference in this lab from the local volume lab are that storage volumes being used by PODs are dynamically created and managed by PX when a volume is needed for a scheduled cassandra POD. In the previous local stoage lab, we manually configured and presented storage on all nodes in the cluster in advance of any scheduled start or scale/failover of the cassandra service.  The casssandra service in this lab also is also configured to consist of two replicas.  
+For this lab, storage volumes are dynamically created and managed by PX.  The cassandra stateful PODs again in this lab are also represented via a K8S headless service called cassandra.  The major difference in this lab from the local volume lab are that storage volumes being used by PODs are dynamically created and managed by PX for each scheduled cassandra POD. In the previous local stoage lab, we manually configured and presented all storage requirements on all nodes in the cluster in advance of any scheduled start or scale/failover of the cassandra service.  The cassandra service in this lab also is also configured to consist of two replicas.  
 
 Scripts again are provided for starting, stopping or obtaining status of the cassandra cluster
 
@@ -18,7 +18,7 @@ On the master K8S node as the user (joeuser) configured for use with kubectl, cd
     -rwxrwxr-x 1  joeuser joeuser   06   Sep 22 10:45 stop-cassandra.sh
     drwxr-xr-x  5 joeuser joeuser  170   Oct  9 09:49 StorageClass
 
-Notice the directory and file structure differs compared to the local lab structure. The StorageClass directory and files are additional configurations used for the installation of PX (px-spec.yaml) and the creation of persistent volumes and volume claims used by in the cassandra statefulset configurations in this lab. 
+Notice the directory and file structure differs compared to the local lab structure. The StorageClass directory and files contain additional configurations used for the installation of PX (px-spec.yaml) and for persistent volumes and volume claims used by in the cassandra statefulset configurations.
 
     joeuser@cassandra1:~/K8S-Cassandra/cassandra-px$ ls -l StorageClass
     total 16
@@ -36,7 +36,7 @@ After a few minutes two pods should be up and running, one pod is named cassandr
     cassandra-0   1/1       Running   0          2h        10.244.1.55    cassandra3
     cassandra-1   1/1       Running   0          2h        10.244.2.131   cassandra2
 
-As in the previous lab, again you'll want to pay attention to the volume creation and management of the volumes being consumed by the cassandra statefulset PODs.  First notice the PX binary in /opt/pwx/bin/pxctl.   You can use the pxctl binary to inspect the volumes within a px cluster that have been created and associated to the PVs and PVCs being consumed by the running cassandra PODs.  Any additional volumes needed to support scale or failover events will also be dynamically created on demand.  Dynamic provisioning of storage across entire clusters really enhances scale, failover, and resiliency requirements needed to achieve a production grade distributed container environment.
+As in the previous lab, again you'll want to pay attention to the creation and management of the volumes being consumed by the cassandra statefulset PODs.  First notice the PX binary in /opt/pwx/bin/pxctl.   You can use the pxctl binary to inspect the volumes within a px cluster that have been created and associated to the PVs and PVCs being consumed by the running cassandra statefulset PODs.  Any additional volumes needed to support scale or failover events will also be dynamically created on demand, or you can use the pxctl binary and APIs to intervene and operate within the storage layer manually as well.  
 
         joeuser@cassandra1:~/K8S-Cassandra/cassandra-px$ /opt/pwx/bin/pxctl v l
          ID			                        NAME						SIZE	HA	SHARED	ENCRYPTED	IO_PRIORITY	SCALE	STATUS
@@ -44,7 +44,8 @@ As in the previous lab, again you'll want to pay attention to the volume creatio
         433784267271062885	pvc-c2e91c09-a1eb-11e7-9e00-0cc47ae545ca	500 GiB	2	no	no		LOW		0	up - attached on 10.100.26.3 *
         * Data is not local to the node on which volume is attached.
 
-For the cassandra PODS in this lab that require storage, PX creates and manages the volumes being consumed  by cassandra.   The volumes have already been prepared without any in line intervention necessary when you startup, scale or failover PODs.   Volumes are created dynamically as needed and are already aligned to the service definitions specified in the service.  In the previous local labs, storage volumes had to be pre-confgured with fdisk, formated with a useable file system, manually announce the new volume to the kernel or reboot the host and have new volumes mounted persistently prior to starting up, scaling or failing over any PODs.  The features and capabilities for dynamically provisioning storage presentation and consumption extremely enhance RTO and RPO capabilities for distributed application container stacks such as Cassandra, running on most infrastructure platforms.  Dynamic provisioning with PX reduces the time and complexities that often increase and impact successful RPO and RTO objective that are required to achieve an enterprise production status
+As in the previous local volume lab, the cassandra PODS require storage at startup, and in this lab, PX creates volumes as required.  The volumes are prepared without any in line intervention necessary during startup, instead volumes are created dynamically, and on demand and are aligned for consumption by the service definitions specified within the statefulset persistent claims and volumes.  In the previous local labs, all storage volumes had to be pre-confgured with fdisk, formatted with a useable file system, manually announced the new volume to the kernel or reboot the host and have new volumes mounted persistently prior to starting up, scaling or failing over any PODs.  
+The features and capabilities PX dynamic provisioning provides within a distributed container cluster extremely enhances RTO and RPO stories for distributed application container stacks, such as Cassandra.  Dynamic provisioning with PX reduces the time and complexities that often increase and impeed successful RPO and RTO objectives that are required to achieve an enterprise production status.   
 
 After connecting via SSH into the cassandra2 host running cassandra, download some test data to the local volume /root.
 
