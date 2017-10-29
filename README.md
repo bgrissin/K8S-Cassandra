@@ -1,6 +1,6 @@
 # Kubernetes, Cassandra, and PX  
 
-![](images/px_k8s.png) ![](images/cassandra.png)    
+![](images/px_k8s.png)    ![](images/cassandra.png)    
 
 ## BuR for modernized enterprise application stacks
 
