@@ -18,7 +18,7 @@ It is not recommended to use this demo confguration for production environments.
 
 ## Setting up the environment
 
-This lab can be run on mulitple public or private platforms.   It was desired to show these labs in an environment as similar to an on premises bare metal environment as we could achieve, but without having to buy physical servers and setting them up so Packet. net was selected to build our platform.
+This lab can be run on many public or private platforms.   It was desired to show these labs in an environment as similar to an on premises bare metal environment as we could achieve, but without having to buy physical servers and setting them up,  so Packet.net was selected to build our platform and labs for this repo.
 
 First, log into Packet.net and create three type0 instances, and name them cassandra1, cassandra2 and cassandra3.   Also create 6 volumes and attach a pair of volumes to each host instance.   You can also name the volume pairs individually if you want.  on each host instance, one of the volumes will be a local mounted and managed volume and the other will be a PX managed volume.
 
@@ -28,13 +28,13 @@ initiate SSH sessions into the first cassandra instance (cassandra1) and clone t
 # [Create your K8S cluster](K8S_create/K8S_setup.md)
 
 
-# [Cassandra using local volumes lab](cassandra-local/README.md)
+# [Cassandra using local volumes](cassandra-local/README.md)
 
 
 # [Cassandra using Portworx PX volumes](cassandra-px/README.md)
 
 
-# [Cassandra/K8s/PX summary](summary/README.md)
+## Cassandra/K8s/PX summary
 
 
 
