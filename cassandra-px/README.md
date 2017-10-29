@@ -1,6 +1,6 @@
-For this lab we use volumes that are dynamically created and managed by PX.  The volumes in this lab are consumed by cassandra stateful PODs and also are also represented via a K8S headless service called cassandra.  The difference in this lab from the local volume lab are  that volumes being used by PODs are dynamically created and managed by PX on demand when a volume is needed for a scheduled cassandra POD. The casssandra service in this lab also is configured consist of two replicas.  
+For this lab, needed volumes are dynamically created and managed by PX.  The cassandra stateful PODs and also are also represented via a K8S headless service called cassandra.  The major difference in this lab from the local volume lab are  that volumes being used by PODs are dynamically created and managed by PX when a volume is needed for a scheduled cassandra POD. In the previous local lab, we manually configured and presented storage on all nodes in the cluster in advance of any scheduled start or scale/failover of the cassandra service.  The casssandra service in this lab also is also configured to consist of two replicas.  
 
-Scripts are also provided for starting, stopping or obtaining status of the cassandra cluster
+Scripts again are provided for starting, stopping or obtaining status of the cassandra cluster
 
   1) start-cassandra.sh
   2) stop-cassandra.sh
@@ -18,7 +18,7 @@ On the master K8S node as the user (joeuser) configured for use with kubectl, cd
     -rwxrwxr-x 1  joeuser joeuser   06   Sep 22 10:45 stop-cassandra.sh
     drwxr-xr-x  5 joeuser joeuser  170   Oct  9 09:49 StorageClass
 
-You might notice that the directory and file structure differs compared to the local lab structure. The StorageClass directory and files are additional configurations used for the installation of PX (px-spec.yaml) and the creation of persistent volumes and volume claims used by in the cassandra statefulset configurations in this lab. 
+Notice the directory and file structure differs compared to the local lab structure. The StorageClass directory and files are additional configurations used for the installation of PX (px-spec.yaml) and the creation of persistent volumes and volume claims used by in the cassandra statefulset configurations in this lab. 
 
     joeuser@cassandra1:~/K8S-Cassandra/cassandra-px$ ls -l StorageClass
     total 16
@@ -36,7 +36,7 @@ After a few minutes two pods should be up and running, one pod is named cassandr
     cassandra-0   1/1       Running   0          2h        10.244.1.55    cassandra3
     cassandra-1   1/1       Running   0          2h        10.244.2.131   cassandra2
 
-As in the previous lab, again you'll want to pay attention to the volume creation and management of the volumes being consumed by the cassandra statefulset PODs.  First notice the PX binary in /opt/pwx/bin/pxctl.   You can use the pxctl binary to inspect the volumes within the px cluster that have been created and associated to the PVs and PVCs being used by the running cassandra PODs.  Any additional volumes needed to support scale or failover events are also dynamically created on demand.  Dynamic provisioning of storage across entire clusters really enhances scale, failover, and resiliency requirements needed to achieve a production grade distributed container environment.
+As in the previous lab, again you'll want to pay attention to the volume creation and management of the volumes being consumed by the cassandra statefulset PODs.  First notice the PX binary in /opt/pwx/bin/pxctl.   You can use the pxctl binary to inspect the volumes within a px cluster that have been created and associated to the PVs and PVCs being consumed by the running cassandra PODs.  Any additional volumes needed to support scale or failover events will also be dynamically created on demand.  Dynamic provisioning of storage across entire clusters really enhances scale, failover, and resiliency requirements needed to achieve a production grade distributed container environment.
 
         joeuser@cassandra1:~/K8S-Cassandra/cassandra-px$ /opt/pwx/bin/pxctl v l
          ID			                        NAME						SIZE	HA	SHARED	ENCRYPTED	IO_PRIORITY	SCALE	STATUS
@@ -44,11 +44,11 @@ As in the previous lab, again you'll want to pay attention to the volume creatio
         433784267271062885	pvc-c2e91c09-a1eb-11e7-9e00-0cc47ae545ca	500 GiB	2	no	no		LOW		0	up - attached on 10.100.26.3 *
         * Data is not local to the node on which volume is attached.
 
-For the cassandra PODS in this lab that consume storage, PX creates and manages the volumes being used.   The volumes have already been prepared without any intervention necessary when you scale or failover PODs.   Volumes are created dynamically as needed and are already aligned to the service definitions specified in the service.
+For the cassandra PODS in this lab that consume storage, PX creates and manages the volumes being used.   The volumes have already been prepared without any intervention necessary when you startup, scale or failover PODs.   Volumes are created dynamically as needed and are already aligned to the service definitions specified in the service.  In the previous local labs, storage had to be pre-existing and ready to use to support any startup, scale or failover of PODs to other existing cluster nodes.
 
-After connecting via SSH into the cassandra2 host running cassandra, download some test data to the local volume /var/lib/cassandra.
+After connecting via SSH into the cassandra2 host running cassandra, download some test data to the local volume /root.
 
-    root@cassandra2:~/$ curl -o /var/lib/cassandra/raw_weather_data.csv https://raw.githubusercontent.com/killrweather/killrweather-data/master/data/raw_weather_data.csv
+    root@cassandra2:~/$ curl -o /root/raw_weather_data.csv https://raw.githubusercontent.com/killrweather/killrweather-data/master/data/raw_weather_data.csv
 
 Here is a snip of what the file looks like, and there should be approx. 16M of data after the download completes. Column headers are shown below for reference only, and should not be part of the actual downloaded data.
 
