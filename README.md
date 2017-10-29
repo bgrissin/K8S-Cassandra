@@ -1,6 +1,6 @@
 # Kubernetes, Cassandra, and PX  
 
-![images/PXK8S.tiff](images/PXK8S.tiff) ![images/PKK*S.tiff](images/PXK8S.tiff)    
+![](images/PXK8S.tiff) ![](images/PXK8S.tiff)    
 
 ## BuR for modernized enterprise application stacks
 
