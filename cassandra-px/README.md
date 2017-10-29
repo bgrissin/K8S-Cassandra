@@ -1,13 +1,11 @@
-For this test we use volumes that are dynamically created and managed by PX by adding the storage volume configurations into a storageclass.
+For this lab we use volumes that are dynamically created and managed by PX by adding the storage volume configurations into a storageclass.  If you look at the cassandra-px directory structure you will see an Storageclass directory and a few yaml definitions in that directory that are used to install and run PX on each cluster node, and a storageclass definition file that is used by the cassandra statefulset PODs.
 
-The volumes in this lab are also consumed by cassandra stateful PODs that are also deployed via a K8S statefulset service using a headless service called cassandra.  The difference in this lab from the local volume  lab, is that volumes being used by PODs are dynamically created and managed on nodes that need a volume where a cassandra POD is scheduled.  Each Cassandra POD is also configured for Cassandra to use 2 replicas.  
+The volumes in this lab are used by cassandra stateful PODs and also are also deployed via a K8S statefulset service using a headless service called cassandra.  The difference in this lab from the local volume  lab, is that volumes being used by PODs are dynamically created and managed on nodes that need a volume where a cassandra POD is scheduled.  Each Cassandra POD is also configured for Cassandra to consist of two replicas.  
 
 Scripts are also provided for starting, stopping or obtaining status of the cassandra cluster
 
 start-cassandra.sh
-
 stop-cassandra.sh
-
 status-check.sh
 
 On the master K8S node as the user (joeuser) configured for use with kubectl, cd into the cassandra-px directory. You should see several files similar to what is shown below.
@@ -61,13 +59,13 @@ Next, exec into the cassandra container on the cassandra2 K8S node, and see the 
     
 Change your directory to /cassandra_data and run cqlsh from where the data file is located within the container.
 
-    $ cd /cassandra_data && cqlsh
+    # cd /cassandra_data && cqlsh
     
-Also within a second seperate SSH session on each host, start iostat against /dev/dm-0 so that we capture IOPS (below captures time interval and TPS every 20 seconds and 100 times) during while data loading and during the failover test.
+Also within a second seperate SSH session on each host, start iostat against /dev/dm-0 so that we capture IOPS (below captures time interval and TPS every 20 seconds and 100 times) during data loading and during the failover test later in this lab.
 
-    $ iostat -mdt /dev/dm-0 20 100 | sed -n -e '1d' -e '/^Device:/d' -e '/^$/d' -e 'p' |sed -e 'N;s/\n/ /' | awk '{ print $2" "$4" - "$5" "$6" "$7; }'
+    $ iostat -mdt /dev/dm-1 20 100 | sed -n -e '1d' -e '/^Device:/d' -e '/^$/d' -e 'p' |sed -e 'N;s/\n/ /' | awk '{ print $2" "$4" - "$5" "$6" "$7; }'
 
-(when testing using px managed volumes in the other lab, this command above changes to monitor the px managed device /dev/dm-1)
+(when testing using locally managed volumes in the other lab, this command above changes to monitor the px managed device /dev/dm-0)
 
 Back to the CQLSH loader screen, execute the following commands to create the keyspaces and tables.
 
