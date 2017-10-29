@@ -1,4 +1,4 @@
-For this lab we use volumes that are dynamically created and managed by PX by adding the storage volume configurations into a storageclass.  The volumes in this lab are used by cassandra stateful PODs and also are also deployed via a K8S statefulset service using a headless service called cassandra.  The difference in this lab from the local volume  lab, is that volumes being used by PODs are dynamically created and managed on nodes that need a volume where a cassandra POD is scheduled.  Each Cassandra POD is also configured for Cassandra to consist of two replicas.  
+For this lab we use volumes that are dynamically created and managed by PX.  The volumes in this lab are consumed by cassandra stateful PODs and also are also deployed via a K8S headless service called cassandra.  The difference in this lab from the local volume  lab, is that volumes being used by PODs are dynamically created and managed by PX on nodes that need a volume where a cassandra POD is scheduled.  The casssandra service is also configured for to consist of two replicas.  
 
 Scripts are also provided for starting, stopping or obtaining status of the cassandra cluster
 
@@ -24,10 +24,6 @@ You might notice that the directory and file structure differences comapred to t
     total 16
     -rw-r--r--  1 joeuser  joeuser  3859 Oct  9 09:49 px-spec.yaml
     -rw-r--r--  1 joeuser  joeuser   197 Oct  9 09:49 px-storageclass.yaml
-    
- 
-    
-    
 
 Start the cassandra service from here using the start-cassandra.sh script
 
@@ -41,6 +37,7 @@ After a few minutes two pods should be up and running, one pod is named cassandr
     cassandra-1   1/1       Running   0          2h        10.244.2.131   cassandra2
 
 One aspect to pay close attention during the following steps for this px volume statefulset to work properly is the way storage volumes are created and managed. For the cassandra PODS in this lab that consume px created and managed volumes to work, the volumes have already been prepared without any intervention needed. This approach for creation and management of volumes automatically aligns to the definitions specified within the service, in this case the cassandra statefulset definition file called cassandra-statefulset.yaml. Keeping proper alignment of volume configurations to service definitions can become quite cumbersome, especially larger production grade environments where the cluster can sprawl and become quite distributed. The next lab (cassandra_PX) uses PX to manage and create the volumes used by services such as cassandra and reveals how PX drastically improves upon the 'out of band' approach of storage management to using a dynamic provisioning approach for creating and managing distributed container storage.
+
 
 After connecting via SSH into the cassandra2 host running cassandra, download some test data to the local volume /var/lib/cassandra.
 
