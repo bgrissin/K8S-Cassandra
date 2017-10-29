@@ -36,7 +36,7 @@ After a few minutes two pods should be up and running, one pod is named cassandr
     cassandra-0   1/1       Running   0          2h        10.244.1.55    cassandra3
     cassandra-1   1/1       Running   0          2h        10.244.2.131   cassandra2
 
-As in the previous lab, again you'll want to pay attention to the volume creation and management of the volumes being consumed by the cassandra statefulset PODs.  First notice the PX binary in /opt/pwx/bin/pxctl.   
+As in the previous lab, again you'll want to pay attention to the volume creation and management of the volumes being consumed by the cassandra statefulset PODs.  First notice the PX binary in /opt/pwx/bin/pxctl.   You can use the pxctl binary to inspect the volumes within the px cluster that have been created and associated to the PVs and PVCs being used by the running cassandra PODs.  Any additional volumes needed to support scale or failover events are also dynamically created on demand.  Dynamic provisioning of storage across entire clusters really enhances scale, failover, and resiliency requirements needed to achieve a production grade distributed container environment.
 
         joeuser@cassandra1:~/K8S-Cassandra/cassandra-px$ /opt/pwx/bin/pxctl v l
          ID			                        NAME						SIZE	HA	SHARED	ENCRYPTED	IO_PRIORITY	SCALE	STATUS
@@ -44,11 +44,7 @@ As in the previous lab, again you'll want to pay attention to the volume creatio
         433784267271062885	pvc-c2e91c09-a1eb-11e7-9e00-0cc47ae545ca	500 GiB	2	no	no		LOW		0	up - attached on 10.100.26.3 *
         * Data is not local to the node on which volume is attached.
 
-
-Also you should be able to use the pxctl binary to inspect the volumes within the px cluster that have been created and assoicated to the PVs and PVCs.  For the cassandra PODS in this lab that consume storage, PX has created and manages the volumes being used.   The volumes have already been prepared without any intervention needed and as you'll notice later when you scale or failover a POD, the volumes needed to support either event are created dynamically as needed and are already aligned to the service definitions specified in the service. 
-
-This approach for creation and management of volumes automatically aligns to the definitions specified within the service, in this case the cassandra statefulset definition file called cassandra-statefulset.yaml. Keeping proper alignment of volume configurations to service definitions can become quite cumbersome, especially larger production grade environments where the cluster can sprawl and become quite distributed. The next lab (cassandra_PX) uses PX to manage and create the volumes used by services such as cassandra and reveals how PX drastically improves upon the 'out of band' approach of storage management to using a dynamic provisioning approach for creating and managing distributed container storage.
-
+For the cassandra PODS in this lab that consume storage, PX creates and manages the volumes being used.   The volumes have already been prepared without any intervention necessary when you scale or failover PODs.   Volumes are created dynamically as needed and are already aligned to the service definitions specified in the service.
 
 After connecting via SSH into the cassandra2 host running cassandra, download some test data to the local volume /var/lib/cassandra.
 
