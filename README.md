@@ -1,6 +1,6 @@
 # Kubernetes, Cassandra, and PX  
 
-![](images/PXK8S.tiff)       ![](images/Cassandra.tiff)
+![images/PXK8S.tiff](images/PXK8S.tiff) ![images/PKK*S.tiff](images/PXK8S.tiff)    
 
 ## BuR for modernized enterprise application stacks
 
@@ -34,7 +34,7 @@ initiate SSH sessions into the first cassandra instance (cassandra1) and clone t
 # [Cassandra using Portworx PX volumes](cassandra-px/README.md)
 
 
-## Cassandra/K8s/PX summary
+## Summary
 
 
 
