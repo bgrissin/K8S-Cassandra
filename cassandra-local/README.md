@@ -17,7 +17,7 @@ On the master node as the user configured for use with kubectl,  cd into the cas
     -rwxrwxr-x 1  joeuser joeuser  859   Sep 13 22:06 status-check.sh
     -rwxrwxr-x 1  joeuser joeuser  106   Sep 22 10:45 stop-cassandra.sh
 
-You should be able to start cassandra from here using the start-cassandra.sh script
+Start the cassandra service from here using the start-cassandra.sh script
 
     joeuser@cassandra1:~/K8S-Cassandra/cassandra-local$ ./start-cassandra.sh
 
@@ -28,7 +28,7 @@ After a few minutes two pods should be up and running cassandra, one pod is name
     cassandra-0   1/1       Running   0          2h        10.244.1.55    cassandra3
     cassandra-1   1/1       Running   0          2h        10.244.2.131   cassandra2
 
-One aspect to pay close attention during the next steps are the way volumes needed for this local volume statefulset to work properly in this lab are created and managed.  For the cassandra PODS in this lab that consume locally mounted and managed volumes to work, the volumes must have already been prepared manually and mounted as /var/lib/cassandra on each host within the K8S cluster.   This a that consume storage are the areas of primary focus for these labs and the drastically differ from the other lab when using PX created and managed devices.   
+One aspect to pay close attention during the following steps taken for this local volume statefulset to work properly is the way storage volumes are created and managed.  For the cassandra PODS in this lab that consume locally mounted and managed volumes to work, the volumes must have already been prepared manually and mounted as /var/lib/cassandra on each host within the K8S cluster.   This 'out of band' approach for creation and management of volumes must align to the definitions within the service definitions.  Keeping proper alignment of the volume configurations to the cassandra service can become quite cumbersome, especially in larger production grade environments.   The next lab (cassandra_PX) uses PX to manage and create the volumes used by the cassandra services and reveals how PX drastically improves from the 'out of band' approach of storage management to use a dynamic provisioning approach that automatically keeps track of the 
 
 Using one of the SSH sessions into cassandra2 host running cassandra,  download some test data to our local volume /var/lib/cassandra that we can use to load directly into cassandra
 
