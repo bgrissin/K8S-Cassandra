@@ -1,5 +1,4 @@
-This lab makes use of local volumes (/var/lib/cassandra) on each host that were created and formatted when we setup our K8S cluster nodes.
-The local volumes are configured within statefulset PODs that are deployed with 2 replicas with a headless service called cassandra.    
+This lab makes use of local volumes (/var/lib/cassandra) on each host that were created and formatted during the setup of the K8S cluster nodes.   Local volumes are configured within a statefulset POD that are deployed as 2 replicas with a headless service called cassandra.  
 
 Scripts are provided for starting, stopping or obtaining status of the cassandra cluster
 
@@ -7,7 +6,7 @@ Scripts are provided for starting, stopping or obtaining status of the cassandra
   2) stop-cassandra.sh
   3) status-check.sh
 
-On the master node, within the git repo cloned earlier, cd into the cassandra-local directory. You should see several files similar to what is shown below.  
+On the master node as the user configured for use with kubectl,  cd into the cassandra-local directory. You should see several files similar to what is shown below.  
 
     joeuser@cassandra1:~/K8S-Cassandra/cassandra-local$ ls -l
     total 24
