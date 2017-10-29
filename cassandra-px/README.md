@@ -2,9 +2,9 @@ For this lab we use volumes that are dynamically created and managed by PX.  The
 
 Scripts are also provided for starting, stopping or obtaining status of the cassandra cluster
 
-start-cassandra.sh
-stop-cassandra.sh
-status-check.sh
+  1) start-cassandra.sh
+  2) stop-cassandra.sh
+  3) status-check.sh
 
 On the master K8S node as the user (joeuser) configured for use with kubectl, cd into the cassandra-px directory. You should see several files similar to what is shown below.  
 
@@ -16,7 +16,7 @@ On the master K8S node as the user (joeuser) configured for use with kubectl, cd
     -rwxrwxr-x 1  joeuser joeuser   99   Sep 22 10:45 start-cassandra.sh
     -rwxrwxr-x 1  joeuser joeuser  859   Sep 13 22:06 status-check.sh
     -rwxrwxr-x 1  joeuser joeuser   06   Sep 22 10:45 stop-cassandra.sh
-    drwxr-xr-x  5 joeuser joeuser  170 Oct  9 09:49 StorageClass
+    drwxr-xr-x  5 joeuser joeuser  170   Oct  9 09:49 StorageClass
 
 You might notice that the directory and file structure differences comapred to the local lab. The StorageClass directy and files are additional configurations used for the installation of PX (px-spec.yaml) and the creation of persistent volumes and volume clais used by in the cassandra statefulset configurations.  
 
@@ -29,14 +29,25 @@ Start the cassandra service from here using the start-cassandra.sh script
 
     joeuser@cassandra1:~/K8S-Cassandra/cassandra-px$ ./start-cassandra.sh
 
-After a few minutes two pods should be up and running, one pod is named cassandra-0 and another called cassandra-1. Open seperate SSH sessions into both nodes (cassandra2 and cassandra3) where the pods are running. Also open a second SSH session to each node that can be used for monitoring.
+After a few minutes two pods should be up and running, one pod is named cassandra-0 and another called cassandra-1. Open seperate SSH sessions into both nodes (cassandra2 and cassandra3) where the pods re running. Also open a second SSH session to each node that can be used for monitoring.
 
     joeuser@cassandra1:~/K8S-Cassandra/cassandra-px$ kubectl get pods -o wide
     NAME          READY     STATUS    RESTARTS   AGE       IP          NODE
     cassandra-0   1/1       Running   0          2h        10.244.1.55    cassandra3
     cassandra-1   1/1       Running   0          2h        10.244.2.131   cassandra2
 
-One aspect to pay close attention during the following steps for this px volume statefulset to work properly is the way storage volumes are created and managed. For the cassandra PODS in this lab that consume px created and managed volumes to work, the volumes have already been prepared without any intervention needed. This approach for creation and management of volumes automatically aligns to the definitions specified within the service, in this case the cassandra statefulset definition file called cassandra-statefulset.yaml. Keeping proper alignment of volume configurations to service definitions can become quite cumbersome, especially larger production grade environments where the cluster can sprawl and become quite distributed. The next lab (cassandra_PX) uses PX to manage and create the volumes used by services such as cassandra and reveals how PX drastically improves upon the 'out of band' approach of storage management to using a dynamic provisioning approach for creating and managing distributed container storage.
+As in the previous lab, again you'll want to pay attention to the volume creation and management of the volumes being consumed by the cassandra statefulset PODs.  First notice the PX binary in /opt/pwx/bin/pxctl.   
+
+        joeuser@cassandra1:~/K8S-Cassandra/cassandra-px$ /opt/pwx/bin/pxctl v l
+         ID			                        NAME						SIZE	HA	SHARED	ENCRYPTED	IO_PRIORITY	SCALE	STATUS
+        873541160657077657	pvc-57a80cf7-a1eb-11e7-9e00-0cc47ae545ca	500 GiB	2	no	no		LOW		0	up - attached on 10.100.26.1 *
+        433784267271062885	pvc-c2e91c09-a1eb-11e7-9e00-0cc47ae545ca	500 GiB	2	no	no		LOW		0	up - attached on 10.100.26.3 *
+        * Data is not local to the node on which volume is attached.
+
+
+Also you should be able to use the pxctl binary to inspect the volumes within the px cluster that have been created and assoicated to the PVs and PVCs.  For the cassandra PODS in this lab that consume storage, PX has created and manages the volumes being used.   The volumes have already been prepared without any intervention needed and as you'll notice later when you scale or failover a POD, the volumes needed to support either event are created dynamically as needed and are already aligned to the service definitions specified in the service. 
+
+This approach for creation and management of volumes automatically aligns to the definitions specified within the service, in this case the cassandra statefulset definition file called cassandra-statefulset.yaml. Keeping proper alignment of volume configurations to service definitions can become quite cumbersome, especially larger production grade environments where the cluster can sprawl and become quite distributed. The next lab (cassandra_PX) uses PX to manage and create the volumes used by services such as cassandra and reveals how PX drastically improves upon the 'out of band' approach of storage management to using a dynamic provisioning approach for creating and managing distributed container storage.
 
 
 After connecting via SSH into the cassandra2 host running cassandra, download some test data to the local volume /var/lib/cassandra.
