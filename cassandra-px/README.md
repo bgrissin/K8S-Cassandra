@@ -1,4 +1,4 @@
-For this lab we use volumes that are dynamically created and managed by PX.  The volumes in this lab are consumed by cassandra stateful PODs and also are also deployed via a K8S headless service called cassandra.  The difference in this lab from the local volume  lab, is that volumes being used by PODs are dynamically created and managed by PX on nodes that need a volume where a cassandra POD is scheduled.  The casssandra service is also configured for to consist of two replicas.  
+For this lab we use volumes that are dynamically created and managed by PX.  The volumes in this lab are consumed by cassandra stateful PODs and also are also represented via a K8S headless service called cassandra.  The difference in this lab from the local volume lab are  that volumes being used by PODs are dynamically created and managed by PX on demand when a volume is needed for a scheduled cassandra POD. The casssandra service in this lab also is configured consist of two replicas.  
 
 Scripts are also provided for starting, stopping or obtaining status of the cassandra cluster
 
@@ -18,7 +18,7 @@ On the master K8S node as the user (joeuser) configured for use with kubectl, cd
     -rwxrwxr-x 1  joeuser joeuser   06   Sep 22 10:45 stop-cassandra.sh
     drwxr-xr-x  5 joeuser joeuser  170   Oct  9 09:49 StorageClass
 
-You might notice that the directory and file structure differences comapred to the local lab. The StorageClass directy and files are additional configurations used for the installation of PX (px-spec.yaml) and the creation of persistent volumes and volume clais used by in the cassandra statefulset configurations.  
+You might notice that the directory and file structure differs compared to the local lab structure. The StorageClass directory and files are additional configurations used for the installation of PX (px-spec.yaml) and the creation of persistent volumes and volume claims used by in the cassandra statefulset configurations in this lab. 
 
     joeuser@cassandra1:~/K8S-Cassandra/cassandra-px$ ls -l StorageClass
     total 16
