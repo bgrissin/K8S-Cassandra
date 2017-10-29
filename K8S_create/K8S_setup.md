@@ -54,7 +54,7 @@ Once you have completed these steps successfully, you should be able to see your
 			cassandra2   Ready     1d        v1.7.5
 			cassandra3   Ready     1d        v1.7.5
 			
-			# kubectl get all --namespace=kube-system
+	  # kubectl get all --namespace=kube-system
 			NAME                                    READY     STATUS    RESTARTS  
 			po/etcd-cassandra1                      1/1       Running   1         
 			po/kube-apiserver-cassandra1            1/1       Running   1         
