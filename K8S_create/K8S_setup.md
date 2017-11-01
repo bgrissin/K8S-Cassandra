@@ -4,7 +4,7 @@ This link below was used as the primary reference for setting up this three node
 
 	https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
 
-Perform these steps to prepare and install K8S on all 3 nodes, all as root user on each node.
+Perform the following steps to prepare and install K8S on all 3 nodes.  Perform all of the steps below as root user on each node.
 
     #  apt-get update && apt-get install -qy docker.io
     #  apt-get update && apt-get install -y apt-transport-https
