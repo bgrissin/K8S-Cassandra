@@ -1,6 +1,6 @@
 # K8S cluster setup details
 
-This link was the reference for setting up this three node K8S cluster.  
+This link below was used as the primary reference for setting up this three node K8S cluster.  
 
 	https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
 
