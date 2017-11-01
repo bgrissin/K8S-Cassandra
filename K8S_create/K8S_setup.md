@@ -1,6 +1,6 @@
 # K8S cluster setup details
 
-I used this link as my reference for setting up my three node K8S cluster.  
+This link was the reference for setting up this three node K8S cluster.  
 
 	https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
 
@@ -13,7 +13,7 @@ Perform these steps to prepare and install K8S on all 3 nodes, all as root user 
     #  apt-get update
     #  apt-get install -y kubelet kubeadm kubernetes-cni
     
-Packet hosts use bond0 for public IP, bond0:0 for private IP.  You should always choose to use private addresses for cluster wide intra-communications
+Packet hosts use bond0 for public IP, bond0:0 for private IP.  You should almost always choose to use private addresses for cluster wide intra-communications
 
 SSH to the first node (from here on out will be referred to as the master node) and use ifconfig to capture the private IP of the bond0:0 interface.  
     
@@ -22,7 +22,7 @@ SSH to the first node (from here on out will be referred to as the master node) 
           inet addr:10.100.1.3  Bcast:255.255.255.255  Mask:255.255.255.254
           UP BROADCAST RUNNING MASTER MULTICAST  MTU:1500  Metric:1
                  
-Init the K8S cluster on the master node. We're use Flannel networking so add in the appropriate CIDR range for Flannel and specify the private IP address collected from the previous ifconfig step to instruct where to run the K8S API server.  You should capture the information at the end of the successful init output so that you can add additional nodes to the K8S cluster.
+Init the K8S cluster on the master node. This lab uses Flannel networking so add in the appropriate CIDR range for Flannel and specify the private IP address collected from the previous ifconfig step to instruct where to run the K8S API server.  You should capture the information at the end of the successful init output so that you can add additional nodes to the K8S cluster.
     
     #  kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=10.100.1.3 
     
@@ -45,7 +45,7 @@ These steps are optional for nodes 2 and 3, but must be done on the master node 
     #  sudo chown $(id -u):$(id -g) $HOME/admin.conf
     #  export KUBECONFIG=$HOME/admin.conf
     
-Once you have completed these steps successfully, you should be able to see your K8S cluster nodes and verify that the services you need to have running.  Note that the kube-dns pod should be in a pending state until after you add the pod networking solution.  In this lab we are planning to use flannel.  Note that from here on out, your running kubectl as the user you setup, not as root.  You may want to add in the admin.conf export to your profile so you do not have to keep sourcing the env variables.
+Once you have completed these steps successfully, you should be able to see your K8S cluster nodes and verify that the services you need to have running.  Note that the kube-dns pod should be in a pending state until after you add the pod networking solution.  As mentioned previously this lab uses flannel.  Note, you run kubectl as the user you setup, not as root.  You may want to add in the admin.conf export to your profile so you do not have to keep sourcing the env variables.
 
 	 #  kubectl get nodes
 		
@@ -72,7 +72,7 @@ Once you have completed these steps successfully, you should be able to see your
 			NAME                     DESIRED   CURRENT   READY     AGE
 			rs/kube-dns-2425271678   1         1         0         1m
 			
-When I receive a DNS pending state, apply the flannel networking services that will allow PODs to communicate to each other across the entire cluster.  
+When a DNS pending state is noticed, apply the flannel networking services that will allow PODs to communicate to each other across the entire cluster.  
  
 	 #  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 	 #  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel-rbac.yml
@@ -154,7 +154,7 @@ Next place a File System on the new volume and then mount it for use in the firs
     
 ## Configure PX Storage
 
-The last step we need to do to complete our K8S cluster is to install PX.   To install PX we need to setup a keystore DB such as etcd or consul.  For this lab we decided use an etcd cluster (multiple etcd containers) running as containers on each K8S node and on specific ports that dont conflict with ports being used by the K8S KV.  Portworx does not recommend using the existing K8S Keystore for running PX.  There is an upcoming release of PX that will come with its own KV within, thus removing the need to install etcd or consul.
+The last step we need to do to complete our K8S cluster is to install PX.   This release of PX requires a keystore DB such as etcd or consul.  For this lab it was decided use an etcd. Etcd can be setup to run locally as a single instance, or a cluster, and can even be setup to run remotely as a service.  For this lab, etcd is setup to run as a container on the master K8S node and on specific ports that dont conflict with ports being used by the K8S KV.  Portworx does not recommend using the existing K8S Keystore for running PX.  There is an upcoming release of PX that will come with its own builtin KV, thus removing the need to install etcd or consul.  Please follow the portworx website to stay up to date when the built in kv option will eb available.
 
 First collect the private IP on the K8S master node bond0:0 interface and export the IP into a variable as follows:
 
@@ -178,12 +178,11 @@ First collect the private IP on the K8S master node bond0:0 interface and export
      -initial-cluster etcd0=http://${IPADDR}:12380 \
      -initial-cluster-state new
 
-Next we are going to install dynamic provisioning PX from your master node.  You have two paths you can take to prepare your PX service.  
+Next, install PX to use dynamic provisioning from your master node.  You have two paths you can take to prepare your PX service.  
 	
 	1) you can directly edit the provided px-spec.yaml in the cassandra-px/StorageClass directory of this repo, or
-	2) you can create your own px-spec.yaml using the curl syntax provided below.  
-	
-In both cases you should only have to change the etcd IP address to match what private IP you used for setting up your etcd.
+	2) you can create your own px-spec.yaml using the curl syntax provided below and copy into the cassandra-px/StorageClass directory  
+In both cases you should only have to change the etcd IP address to match what private IP(s) you used for setting up your etcd.
 	
      #curl -o px-spec.yaml "http://install.portworx.com?cluster=my-px-cluster&kvdb=etcd://10.100.1.3:12379&drives=/dev/dm-1&diface=bond0:0&miface=bond0&master=true"
 	
