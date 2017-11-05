@@ -1,4 +1,4 @@
-This lab uses of local volumes (/var/lib/cassandra) on each host that were created and formatted during the setup steps while creating the K8S cluster nodes.   Local volumes are configured for use within a statefulset POD definitions and are deployed as 2 replicas with a headless service named cassandra.  
+This lab uses local volumes (/var/lib/cassandra) on each host that are created and formatted during the setup steps below.   The local volumes are configured for use within statefulset POD definitions and are deployed as 2 replicas using a headless service named cassandra. 
 
 Scripts are provided for starting, stopping or obtaining status of the cassandra cluster
 
@@ -6,7 +6,7 @@ Scripts are provided for starting, stopping or obtaining status of the cassandra
   2) stop-cassandra.sh
   3) status-check.sh
 
-On the master K8S node as the user (joeuser) configured for use with kubectl,  cd into the cassandra-local directory. You should see several files similar to what is shown below.  
+On the master K8S node as the kubectl capable user (joeuser),  change into the cassandra-local directory. You should see several files similar to what is shown below.  
 
     joeuser@cassandra1:~/K8S-Cassandra/cassandra-local$ ls -l
     total 24
@@ -28,7 +28,7 @@ After a few minutes two pods should be up and running, one pod is named cassandr
     cassandra-0   1/1       Running   0          2h        10.244.1.55    cassandra3
     cassandra-1   1/1       Running   0          2h        10.244.2.131   cassandra2
 
-One aspect to pay close attention during these next steps for this local volume statefulset to work properly is the way the storage volumes are created and managed for consumption by the cassandra PODs. The cassandra PODS in this lab consume locally mounted and managed volumes that were prepared manually and mounted as /var/lib/cassandra on each host within the K8S cluster setup steps performed earlier.   This 'out of band' approach for creation and management of volumes must align to the definitions specified within cassandra service POD definition, in this case named cassandra-statefulset.yaml.  Keeping proper alignment of volume configurations to service definitions can become quite cumbersome, especially with larger, more expansive production grade environments where the cluster can sprawl and become quite distributed.   The next lab (cassandra_PX) uses PX to manage and create the volumes used by services such as the cassandra statefulset POD and thus reveals how PX drastically improves upon the 'out of band' approach of storage management to using a dynamic provisioning approach for creating and managing distributed container storage. 
+One aspect to pay close attention during these next steps for this local volume statefulset to work properly is the way the storage volumes are created and managed for consumption by the cassandra PODs. The cassandra PODS in this lab consume locally mounted and managed volumes that were prepared manually and mounted as /var/lib/cassandra on each host within the K8S cluster setup steps performed earlier.   This 'out of band' approach for creation and management of volumes must align to the definitions specified within cassandra service POD definition, in this case named cassandra-statefulset.yaml.  Keeping proper alignment of volume configurations to service definitions can become quite cumbersome, especially with larger, more expansive production grade environments where the cluster can sprawl and are often  quite distributed.   The next lab (cassandra_PX) uses PX to manage and create the volumes used by services such as the cassandra statefulset POD and thus reveals how PX drastically improves upon the 'out of band' approach of storage management to using a dynamic provisioning approach for creating and managing distributed container storage. 
 
 After connecting via SSH into the cassandra2 host running cassandra,  download some test data to the local volume /var/lib/cassandra.
 
@@ -75,7 +75,7 @@ Back to the CQLSH loader screen, execute the following commands to create the ke
 
     cqlsh> CREATE TABLE raw_weather_data (wsid text, year int, month int, day int, hour int, temperature double,dewpoint double,pressure double,wind_direction double, wind_speed double, sky_condition text,sky_condition_text text,one_hour_precip double,six_hour_precip double,twenty_four_hour_precip double, PRIMARY KEY ((wsid), year, month, day, hour)) WITH CLUSTERING ORDER BY (year DESC, month DESC, day DESC, hour DESC);
     
-Begin the data load process.  This will take some time depending how large the data file is.  Once the loader completes  some details about the load process and statistics will be returned.
+Begin the data load process.  This will take some time depending how large the data file is.  Once the loader completes, some details about the load process and statistics will be returned.
 
     cqlsh> COPY raw_weather_data (wsid, year, month, day, hour, temperature, dewpoint, pressure, wind_direction, wind_speed, sky_condition, one_hour_precip, six_hour_precip,twenty_four_hour_precip) FROM 'raw_weather_data.csv' WITH MAXINSERTERRORS = -1;
         
