@@ -1,10 +1,10 @@
 # K8S cluster setup details
 
-This link below was used as the primary reference for setting up a three node K8S cluster.  
+The link below was used as the primary reference for setting up a three node K8S cluster.  
 
 	https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
 
-Perform the following steps to prepare and install K8S on all 3 nodes.  Perform all of the steps below as root user on each node.
+Perform the following steps provided below on all 3 nodes as root to prepare for installation of a K8S cluster.  
 
     #  apt-get update && apt-get install -qy docker.io
     #  apt-get update && apt-get install -y apt-transport-https
@@ -195,4 +195,4 @@ After a few minutes, you should be able to run PXCTL on any node in your cluster
      
      # /opt/pwx/bin/pxctl status
 	 
-This concludes the steps for setting up your K8S cluster for use with this lab.  Please move forward to the next stage of the lab.
+This concludes the steps for setting up your K8S cluster.  Please move forward to the next stage of this lab [here](https://github.com/bgrissin/K8S-Cassandra/blob/master/cassandra-local/README.md)
