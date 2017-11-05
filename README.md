@@ -14,7 +14,7 @@ This demo makes use of a kubernetes cluster consisting of three nodes, 1 tainted
 
 There are two seperate tests available to run.   All hosts in both tests will use identical attached storage configurations and the same hosts.   In both tests, statefulset workloads will be deployed, each with a headless service that acts as the casssandra cluster load balancer that holds seed provider information such as provate IPs for all cassandra PODs.  During the first test local volumes are used as the underlying storage and PX is used during the second lab which uses peristent volumes and claims defined with by a storageclass.       
 
-It is not recommended to use this demo confguration for production environments.  
+Thes labs are not intended for production environments.  
 
 ## Get some Infrastructure
 
