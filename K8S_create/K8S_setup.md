@@ -186,7 +186,7 @@ In both cases you should only have to change the etcd IP address to match what p
 	
      #curl -o px-spec.yaml "http://install.portworx.com?cluster=my-px-cluster&kvdb=etcd://10.100.1.3:12379&drives=/dev/dm-1&diface=bond0:0&miface=bond0&master=true"
 	
-Once you have your px-spec.yaml created, you then should be able to create the dynamic provisioning PX service using the following command from where you created the px-spec.yaml
+Once you have your px-spec.yaml created, you then should be able to create the dynamic provisioning PX service using the following command from where you created the px-spec.yaml.   There is an example of a complete px-spec.yaml file located in this repo here, but would need to be changed to correspond to your IP addresses and devices.
 
      # kubectl apply -f px-spec.yaml
 	 
