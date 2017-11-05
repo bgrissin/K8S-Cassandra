@@ -180,13 +180,14 @@ First collect the private IP on the K8S master node bond0:0 interface and export
 
 Next, install PX to use dynamic provisioning from your master node.  You have two paths you can take to prepare your PX service.  
 	
-	1) you can directly edit the provided px-spec.yaml in the cassandra-px/StorageClass directory of this repo, or
-	2) you can create your own px-spec.yaml using the curl syntax provided below and copy into the cassandra-px/StorageClass directory  
-In both cases you should only have to change the etcd IP address to match what private IP(s) you used for setting up your etcd.
+	1) you can directly edit the provided px-spec.yaml in the cassandra-px/StorageClass directory of this repo [here](https://github.com/bgrissin/K8S-Cassandra/blob/master/cassandra-px/StorageClass/px-spec.yaml)
+	2) or you can create your own px-spec.yaml using the curl syntax provided below and copy into the cassandra-px/StorageClass directory 
+	
+You will have to change the etcd IP address(es) to match what private IP(s) you decided to use for your etcd service.
 	
      # curl -o px-spec.yaml "http://install.portworx.com?cluster=my-px-cluster&kvdb=etcd://10.100.1.3:12379&drives=/dev/dm-1&diface=bond0:0&miface=bond0&master=true"
 	
-Once you have your px-spec.yaml created, you then should be able to create the dynamic provisioning PX service using the following command from where you created the px-spec.yaml.   There is an example of a complete px-spec.yaml file located in this repo # [here](https://github.com/bgrissin/K8S-Cassandra/blob/master/cassandra-px/StorageClass/px-spec.yaml), but would need to be changed to correspond to your IP addresses and devices.
+Once you have your px-spec.yaml created, you then should be able to create the dynamic provisioning PX service using the following command from where you created the px-spec.yaml.
 
      # kubectl apply -f px-spec.yaml
 	 
