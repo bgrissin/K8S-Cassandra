@@ -1,6 +1,6 @@
 # K8S cluster setup details
 
-This link below was used as the primary reference for setting up this three node K8S cluster.  
+This link below was used as the primary reference for setting up a three node K8S cluster.  
 
 	https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
 
@@ -38,14 +38,14 @@ These following steps should be performed on all 3 nodes.
     #  su - joeuser
     #  docker ps  ----> make certain docker runs as user joeuser
         
-These steps are optional for nodes 2 and 3, but must be done on the master node (node 1).  In this case, joeuser is the user.
+These steps are optional for nodes 2 and 3, but must be done on the master node (node 1).  In the example provided below, joeuser is the user.
      
     #  su - joeuser
     #  sudo cp /etc/kubernetes/admin.conf $HOME/
     #  sudo chown $(id -u):$(id -g) $HOME/admin.conf
     #  export KUBECONFIG=$HOME/admin.conf
     
-Once you have completed these steps successfully, you should be able to see your K8S cluster nodes and verify that the services you need to have running.  Note that the kube-dns pod should be in a pending state until after you add the pod networking solution.  As mentioned previously this lab uses flannel.  Note, you run kubectl as the user you setup, not as root.  You may want to add in the admin.conf export to your profile so you do not have to keep sourcing the env variables.
+Once you have completed these steps successfully, you should be able to see your K8S cluster nodes and verify the services you need are  running.  Note that the kube-dns pod should be in a pending state until after you add the pod networking solution, this lab uses flannel.  Also, run kubectl as the user you setup (i.e. joeuser), not as root.  Also consider updating your shell profile with the admin.conf export so you do not have to keep sourcing the env variables.
 
 	 #  kubectl get nodes
 		
@@ -140,7 +140,7 @@ Use dm-0 on all 3 host instances as the locally mounted volume /var/lib/cassandr
 	/dev/mapper/volume-ab51ff46-part1       2048 209715199 209713152  100G 83 Linu
       - Then press 'q' to quit fdisk.
 
-We then have to use kpartx to write the new device info into the kernel. We could also just reboot the host, but we are going to save the reboot and use the kpartx instead
+Now use kpartx to write the new device info into the kernel, or just reboot the host, In the example below opts to not reboot and use the kpartx instead
     
     #  kpartx -u /dev/mapper/volume-ab51ff46-part1 
     
