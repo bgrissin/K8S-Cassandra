@@ -180,7 +180,7 @@ First collect the private IP on the K8S master node bond0:0 interface and export
 
 Next, install PX to use dynamic provisioning from your master node.  You have two paths you can take to prepare your PX service.  
 	
-	1) you can directly edit the provided px-spec.yaml in the cassandra-px/StorageClass directory of this repo [here](https://github.com/bgrissin/K8S-Cassandra/blob/master/cassandra-px/StorageClass/px-spec.yaml)
+	1) you can directly edit the provided px-spec.yaml in the cassandra-px/StorageClass directory of this repo # [here](https://github.com/bgrissin/K8S-Cassandra/blob/master/cassandra-px/StorageClass/px-spec.yaml)
 	2) or you can create your own px-spec.yaml using the curl syntax provided below and copy into the cassandra-px/StorageClass directory 
 	
 You will have to change the etcd IP address(es) to match what private IP(s) you decided to use for your etcd service.
