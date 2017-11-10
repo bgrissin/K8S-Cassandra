@@ -22,7 +22,7 @@ SSH to the first node (from here on out will be referred to as the master node) 
           inet addr:10.100.1.3  Bcast:255.255.255.255  Mask:255.255.255.254
           UP BROADCAST RUNNING MASTER MULTICAST  MTU:1500  Metric:1
                  
-Init the K8S cluster on the master node. This lab uses Flannel networking so add in the appropriate CIDR range for Flannel and specify the private IP address collected from the previous ifconfig step to instruct where to run the K8S API server.  You should capture the information at the end of the successful init output so that you can add additional nodes to the K8S cluster.
+Init the K8S cluster on the master node. This lab make use of the Flannel network plugin, so add in the appropriate CIDR range required for settting up Flannel and be sure to use the private IP address collected from the previous ifconfig step to instruct where to run the K8S API server.  You should capture the information at the end of the successful init output so that you can add additional nodes to the K8S cluster.
     
     #  kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=10.100.1.3 
     
