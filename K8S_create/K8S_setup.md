@@ -109,9 +109,9 @@ Also the default K8S config does not allow you to deploy pods on your master, fo
 	 
 ## Configuring local storage. 
 
-Packet hosts allow you to attach mulitple storage volumes to your each of your instances.  For this lab each node has two seperate volumes presented per node (one volume for use with PX and the other as a locally mounted volume as /var/lib/cassandra).  They should appear as dm-0 and dm-1 as in the output shown below (run these steps as root)
+Packet hosts allow you to attach mulitple storage volumes to your each of your instances.  For this lab each node has two seperate volumes presented per node (one volume for use with PX and the other as a locally mounted volume as /var/lib/cassandra).  They should appear as dm-0 and dm-1 as in the output shown below (run these steps as root, and perform these steps on each packet host).
 
-    # packet-block-storage-attach -m queue
+    # root@cassandra1:~# packet-block-storage-attach -m queue
     
 If successful, you should be able to see each of the new storage devices using the multipath tools on each packet host
 
@@ -154,7 +154,7 @@ Next place a File System on the new volume and then mount it for use in the firs
     
 ## Configure PX Storage
 
-The last step we need to do to complete our K8S cluster is to install PX.   This release of PX requires a keystore DB such as etcd or consul.  For this lab it was decided use an etcd. Etcd can be setup to run locally as a single instance, or a cluster, and can even be setup to run remotely as a service.  For this lab, etcd is setup to run as a container on the master K8S node and on specific ports that dont conflict with ports being used by the K8S KV.  Portworx does not recommend using the existing K8S Keystore for running PX.  There is an upcoming release of PX that will come with its own builtin KV, thus removing the need to install etcd or consul.  Please follow the portworx website to stay up to date when the built in kv option will eb available.
+The last step we need to do to complete our K8S cluster is to install PX.   This release of PX requires a keystore DB such as etcd or consul.  For this lab it was decided use an etcd. Etcd can be setup to run locally as a single instance, or a cluster, and can even be setup to run remotely as a service.  For this lab, etcd is setup to run as a container on the master K8S node and on specific ports that dont conflict with ports being used by the K8S KV.  Portworx does not recommend using the existing K8S Keystore for running PX.  There is an upcoming release of PX that will come with its own builtin KV, thus removing the need to install etcd or consul.  Please follow the portworx website to stay up to date when the built in kv option will be available.
 
 First collect the private IP on the K8S master node bond0:0 interface and export the IP into a variable as follows:
 
@@ -187,7 +187,7 @@ In either case be sure to change the etcd IP address(es) and ports that are requ
 	
      # curl -o px-spec.yaml "http://install.portworx.com?cluster=my-px-cluster&kvdb=etcd://10.100.1.3:12379&drives=/dev/dm-1&diface=bond0:0&miface=bond0&master=true"
 	
-Once you have your px-spec.yaml created, you then should be able to create the PX service using the following command from where you created the px-spec.yaml.
+Once you have your px-spec.yaml created, you then should be able to create the PX service using the following command from where you created the px-spec.yaml.  Remember to login or su to the kubectl user (joeuser) setup earlier in order to run this command.
 
      # kubectl apply -f px-spec.yaml
 	 
