@@ -35,7 +35,13 @@ Initiate and test SSH sessions into the first cassandra instance (cassandra1) an
 
 
 ## Summary
+- The automation capabilities using PX dynamic provisioning are a devops dream.   The amount of code required to to automate stateful portions of your stack to applicable stateless layers is minimal and seemless.   Also when PX is released that contains a key value store built within instead of installing yet another etcd or consul will also help reduce the amount of complexity
 
+- The introduction of a storage manaagement layer for container workloads within a CAAS or PAAS provides deep level storage management features that are not available in SAN or NAS management tools.   Having a layer of storage management that is tied into the container stacks were a storage admin can quickly see what is being consumed and taking place with all storage volumes across a container platform is a requirement for running production grade environments
+
+- DR and BuR recovery capabilities using PX vastly improve availability, recovery times and recovery points.  Building recovery and DR strategies for every application stack that uses or consumes storage differently, adds too much extra unique automation to each stack pipeline, thus increasing the margin for error and failure of successful recovery from downtime or disasters.  Additionally, using PX snap to enhance scale or recovery of storage volumes with data when in a multidata center environment will yield incredible improvements for resiliency and achieving the fastest recovery times achievable.
+
+- Last, when measuring IOPS performance using iostat on our lab nodes during load and failover operations, PX volumes revealed a pleasant surprise by revealing significant performance improvements compared to the traditionally mounted volumes.   The TPS captured during these labs offered revealed very compelling performance numbers that should be of interest any who are looking for improvements in overall speed or have workloads that suffer from high iowait times or have high CPU idle times for stateful applications on various hosts.   We often  overlook that underlying storage on hosts running container application stacks can be a cause for processes that have latency issues such as high CPU idle time, or high iowaits.   Using PX helps improve the speed natively, but also provides the management layer often needed to isloate and identify where storage bottlenecks are occuring within complex stacks.  I have saved some examples from my execution of these labs for those who want a peak at the numbers without having run the labs here.
 
 
 
