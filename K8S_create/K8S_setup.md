@@ -38,7 +38,7 @@ These following steps should be performed on all 3 nodes.
     #  su - joeuser
     #  docker ps  ----> make certain docker runs as user joeuser
         
-These steps are optional for nodes 2 and 3, but must be done on the master node (node 1).  In the example provided below, joeuser is the user.
+These steps are optional for nodes 2 and 3, but must be done on the master node (node 1).  In the example provided below, joeuser is the user being created and sourced with the capabilities for running kubectl, which will be necessary to keep in mind during the labs coming up.
      
     #  su - joeuser
     #  sudo cp /etc/kubernetes/admin.conf $HOME/
