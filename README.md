@@ -12,7 +12,7 @@ Cassandra running as a statefulset service on a K8S cluster is a good example to
 
 This demo makes use of a kubernetes cluster consisting of three nodes, 1 tainted master node and 2 additional worker hosts.   Statefulset  PODs are deployed as replicated Cassandra clusters across two of three K8S nodes, leaving one empty node available to be brought in as a additional node to support our planned failure events.  
 
-There are two seperate tests available to run, one which uses local storage and a second that uses PX managed stroage.   All hosts in both tests will use identical attached storage configurations using the same hosts.   In both tests, statefulset workloads will be deployed, each with a headless service that acts as the casssandra cluster seed provider for holding information such as private IPs for all cassandra PODs can talk to one another across their respective rings.       
+There are two seperate tests available to run, one which uses local storage and a second that uses PX managed storage.   All hosts in both tests will use identical attached storage configurations using the same hosts.   In both tests, statefulset workloads will be deployed, each with a headless service that acts as the casssandra cluster seed provider for holding information such as private IPs for all cassandra PODs can talk to one another across their respective rings.       
 
 These labs are not intended for production environments.  
 
