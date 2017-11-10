@@ -6,7 +6,7 @@ Scripts are provided for starting, stopping or obtaining status of the cassandra
   2) stop-cassandra.sh
   3) status-check.sh
 
-On the master K8S node as the kubectl capable user (joeuser),  change into the cassandra-local directory. You should see several files similar to what is shown below.  
+On the master K8S node as the kubectl user (joeuser),  change into the cassandra-local directory. You should see several files similar to what is shown below.  
 
     joeuser@cassandra1:~/K8S-Cassandra/cassandra-local$ ls -l
     total 24
