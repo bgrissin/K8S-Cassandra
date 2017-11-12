@@ -103,3 +103,4 @@ The amount of time it takes to get to a running state as a new POD on cassandra1
 
 During the bootstrap phase of the recovery, you will find in the logs, message references that signal to other cassandra members when nodes are down or up using internally managed IP addresses.  Also you will find log references of commit replays are being performed.  
 
+This concludes the local storage version of this lan, please more forward to the next step of this lab (here)[
