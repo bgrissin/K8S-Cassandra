@@ -4,6 +4,16 @@ The link below was used as the primary reference for setting up a three node K8S
 
 	https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
 
+## Get some Infrastructure
+
+This lab can be run on most public or private platforms.   Packet.net was chosen as the platform for these labs because of the close resemblance to an on premises experience.
+
+First, log into Packet.net and create three type0 instances, and name them cassandra1, cassandra2 and cassandra3.   Also create 6 volumes and attach a pair of volumes to each host instance.  For each host instance, one of the volumes will act as a locally mounted volume and the other will be a PX managed volume.  Once two volumes are attached to each instance, the setup for those volumes is covered in section below titled 'Create a K8S cluster'
+
+Initiate and test SSH sessions into the first cassandra instance (cassandra1) and clone this repo.  Also initiate ssh sessions to the other instances (cassandra2 and cassandra3)
+
+## Begin to install and configure a K8S cluster
+
 Perform the following steps provided below on all 3 nodes as root to prepare for installation of a K8S cluster.  
 
     #  apt-get update && apt-get install -qy docker.io
